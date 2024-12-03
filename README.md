@@ -274,8 +274,7 @@ With this structure, the project stays manageable and maintainable, despite thos
 Nano OG is powered by **MongoDB** storage, with each model carefully structured to keep the app humming along smoothly. Here's a closer look at the data models and how they connect:
 
 - **User** 🧑‍💼: Stores user credentials, profiles, and role information. This model ensures each user enjoys secure, authenticated access.
-- **OG** 📚: Contains details like title, type, topics, and handy timestamps for creation and updates, essentially, everything about a og except the content itself!
-- **Detail** 📖: Houses the content for each detail, stored in both markdown and HTML formats for flexibility.
+- **OG** 📚: Contains ogs like title, type, topics, and handy timestamps for creation and updates, essentially, everything about a og except the content itself!
 - **Conversation** 💬: Logs chats between users and the Gemini AI, so each interaction has a place in history.
 - **Message** 📝: Tracks individual messages within each conversation, capturing the ebb and flow of the AI interaction.
 - **Subscription** 💳: Manages subscription plans, payment methods, and active status, essentially the gatekeeper for access levels and perks.

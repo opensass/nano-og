@@ -1,53 +1,34 @@
-use bson::oid::ObjectId;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct StoreOGRequest {
     pub token: String,
     pub title: String,
-    pub subtitle: String,
-    pub content: String,
-    pub og_type: Option<String>,
+    pub description: String,
+    pub site_name: String,
+    pub image_url: String,
+    pub author: String,
+    pub locale: String,
+    pub twitter_card: String,
+    pub twitter_site: String,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct UpdateOGContentRequest {
     pub og_id: String,
-    pub new_content: String,
-}
-
-#[derive(Debug, Serialize, Deserialize, Clone)]
-pub struct CompleteOGRequest {
-    pub og_id: ObjectId,
+    pub title: Option<String>,
+    pub description: Option<String>,
+    pub site_name: Option<String>,
+    pub image_url: Option<String>,
+    pub author: Option<String>,
+    pub locale: Option<String>,
+    pub twitter_card: Option<String>,
+    pub twitter_site: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct GetOGsForUserRequest {
     pub token: String,
-}
-
-#[derive(Debug, Serialize, Deserialize, Clone)]
-pub struct GenerateOGRequest {
-    pub title: String,
-    pub subtitle: String,
-    pub token: String,
-    pub model: String,
-    pub outline: String,
-    pub subtopics: u64,
-    pub details: u64,
-    pub language: String,
-    pub max_length: u64,
-}
-
-#[derive(Debug, Serialize, Deserialize, Clone)]
-pub struct GenerateDetailContentRequest {
-    pub detail_title: String,
-    pub detail_id: ObjectId,
-    pub og_title: String,
-    pub language: String,
-    pub markdown: String,
-    pub html: String,
-    pub model: String,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -60,10 +41,4 @@ pub struct GetOGForUserRequest {
 pub struct AIRequest {
     pub token: String,
     pub text: String,
-}
-
-#[derive(Debug, Serialize, Deserialize, Clone)]
-pub struct GetDetailContentRequest {
-    pub html: String,
-    pub og_id: String,
 }

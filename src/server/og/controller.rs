@@ -7,18 +7,13 @@ use dioxus_logger::tracing;
 
 use crate::server::auth::controller::auth;
 use crate::server::common::response::SuccessResponse;
-use crate::server::og::model::Detail;
 use crate::server::og::model::OG;
 use crate::server::og::request::AIRequest;
-use crate::server::og::request::CompleteOGRequest;
-use crate::server::og::request::GenerateDetailContentRequest;
-use crate::server::og::request::GenerateOGRequest;
-use crate::server::og::request::GetDetailContentRequest;
 use crate::server::og::request::GetOGForUserRequest;
 use crate::server::og::request::GetOGsForUserRequest;
 use crate::server::og::request::StoreOGRequest;
 use crate::server::og::request::UpdateOGContentRequest;
-use crate::server::og::response::GenerateOGOutlineResponse;
+use crate::server::og::response::GenerateOGResponse;
 use crate::server::og::response::OGResponse;
 use crate::server::og::response::{AIUsageStats, AnalyticsData, EngagementStats, PredictiveStats};
 use std::env;
@@ -66,24 +61,42 @@ pub async fn store_og(req: StoreOGRequest) -> Result<SuccessResponse<OGResponse>
         client.database(&std::env::var("MONGODB_DB_NAME").expect("MONGODB_DB_NAME must be set."));
     let og_collection = db.collection::<OG>("ogs");
 
-    let photo_url = fetch_cover(req.title.to_string()).await?;
-
+    // if req.image_url.is_empty() {
+    //     let photo_url = fetch_cover(req.title.clone()).await?;
+    // }
     let new_og = OG {
         id: ObjectId::new(),
         user: user.id,
         title: req.title,
-        subtitle: Some(req.subtitle),
-        og_type: req.og_type,
-        cover: photo_url,
-        completed: false,
+        description: req.description,
+        site_name: req.site_name,
+        image_url: req.image_url,
+        author: req.author,
+        locale: req.locale,
+        twitter_card: req.twitter_card,
+        twitter_site: req.twitter_site,
         created_at: Utc::now(),
         updated_at: Utc::now(),
     };
+
     og_collection.insert_one(new_og.clone()).await?;
 
     Ok(SuccessResponse {
         status: "success".into(),
-        data: OGResponse { id: new_og.id },
+        data: OGResponse {
+            id: new_og.id,
+            user: new_og.user,
+            title: new_og.title,
+            description: new_og.description,
+            site_name: new_og.site_name,
+            image_url: new_og.image_url,
+            author: new_og.author,
+            locale: new_og.locale,
+            twitter_card: new_og.twitter_card,
+            twitter_site: new_og.twitter_site,
+            created_at: new_og.created_at,
+            updated_at: new_og.updated_at,
+        },
     })
 }
 
@@ -121,7 +134,7 @@ pub async fn fetch_cover(topic: String) -> Result<Option<String>, ServerFnError>
 }
 
 #[server]
-pub async fn update_detail_content(
+pub async fn update_og(
     req: UpdateOGContentRequest,
 ) -> Result<SuccessResponse<String>, ServerFnError> {
     let client = get_client().await;
@@ -131,36 +144,41 @@ pub async fn update_detail_content(
 
     let og_id = ObjectId::parse_str(&req.og_id).map_err(|_| ServerFnError::new("Invalid og ID"))?;
 
+    let mut updates = doc! {};
+    if let Some(title) = req.title {
+        updates.insert("title", title);
+    }
+    if let Some(description) = req.description {
+        updates.insert("description", description);
+    }
+    if let Some(site_name) = req.site_name {
+        updates.insert("siteName", site_name);
+    }
+    if let Some(image_url) = req.image_url {
+        updates.insert("imageUrl", image_url);
+    }
+    if let Some(author) = req.author {
+        updates.insert("author", author);
+    }
+    if let Some(locale) = req.locale {
+        updates.insert("locale", locale);
+    }
+    if let Some(twitter_card) = req.twitter_card {
+        updates.insert("twitterCard", twitter_card);
+    }
+    if let Some(twitter_site) = req.twitter_site {
+        updates.insert("twitterSite", twitter_site);
+    }
+
+    updates.insert("updatedAt", Utc::now());
+
     og_collection
-        .update_one(
-            doc! { "_id": og_id },
-            doc! { "$set": { "content": req.new_content, "updatedAt": Utc::now() } },
-        )
+        .update_one(doc! { "_id": og_id }, doc! { "$set": updates })
         .await?;
 
     Ok(SuccessResponse {
         status: "success".into(),
         data: "OG updated successfully".into(),
-    })
-}
-
-#[server]
-pub async fn complete_og(req: CompleteOGRequest) -> Result<SuccessResponse<String>, ServerFnError> {
-    let client = get_client().await;
-    let db =
-        client.database(&std::env::var("MONGODB_DB_NAME").expect("MONGODB_DB_NAME must be set."));
-    let og_collection = db.collection::<OG>("ogs");
-
-    og_collection
-        .update_one(
-            doc! { "_id": req.og_id },
-            doc! { "$set": { "completed": true, "updatedAt": Utc::now() } },
-        )
-        .await?;
-
-    Ok(SuccessResponse {
-        status: "success".into(),
-        data: "OG marked as completed".into(),
     })
 }
 
@@ -177,7 +195,7 @@ pub async fn get_ogs_for_user(
         client.database(&std::env::var("MONGODB_DB_NAME").expect("MONGODB_DB_NAME must be set."));
     let og_collection = db.collection::<OG>("ogs");
 
-    let ogs = og_collection
+    let ogs: Vec<OG> = og_collection
         .find(doc! { "user": user.id })
         .await?
         .try_collect()
@@ -196,7 +214,6 @@ pub async fn get_og_for_user(
     let user = auth(req.token)
         .await
         .map_err(|_| ServerFnError::new("Not Authenticated"))?;
-
     let client = get_client().await;
     let db =
         client.database(&std::env::var("MONGODB_DB_NAME").expect("MONGODB_DB_NAME must be set."));
@@ -212,242 +229,5 @@ pub async fn get_og_for_user(
     Ok(SuccessResponse {
         status: "success".into(),
         data: og,
-    })
-}
-
-#[server]
-pub async fn generate_og_outline(
-    req: GenerateOGRequest,
-) -> Result<SuccessResponse<GenerateOGOutlineResponse>, ServerFnError> {
-    let user = auth(req.token)
-        .await
-        .map_err(|_| ServerFnError::new("Not Authenticated"))?;
-
-    let system_prompt = format!(
-        "
-        **System Prompt (SP):** You are an expert travel planner creating a structured, day-by-day og itinerary.
-    
-        **Prompt (P):** Create a travel outline titled '{title}' to the destination '{subtitle}'. The og should be planned with a main theme of '{title}', and presented in {language}. The itinerary should fit within a budget of {budget}. 
-    
-        Generate a day-by-day schedule for the og, including specific places to visit, activities, and an estimated time duration for each. Use a structured format for each day and activity.
-    
-        **Expected Format (EF):**
-        ### Day [number]: [Day Title]
-        #### Place [number]: [Place Name]
-        **Estimated Duration:** [Duration] minutes
-    
-        * [Activity description]
-        * [Additional information as needed]
-    
-        **Roleplay (RP):** As a travel planner, make the plan engaging and realistic.
-        ",
-        title = req.title,
-        subtitle = req.subtitle,
-        budget = req.subtopics,
-        language = req.language,
-    );
-
-    let outline = req.outline;
-
-    let db_client = get_client().await;
-    let db = db_client
-        .database(&std::env::var("MONGODB_DB_NAME").expect("MONGODB_DB_NAME must be set."));
-    let og_collection = db.collection::<OG>("ogs");
-
-    let photo_url = fetch_cover(req.title.clone()).await?;
-
-    let og = OG {
-        id: ObjectId::new(),
-        user: user.id,
-        title: req.title.clone(),
-        subtitle: Some(req.subtitle.clone()),
-        og_type: Some(req.title.clone()),
-        completed: false,
-        cover: photo_url,
-        created_at: Utc::now(),
-        updated_at: Utc::now(),
-    };
-
-    og_collection.insert_one(og.clone()).await?;
-
-    let details = parse_outline(outline.clone(), og.id, req.language)?;
-
-    let details_collection = db.collection::<Detail>("details");
-    details_collection.insert_many(details.clone()).await?;
-
-    Ok(SuccessResponse {
-        status: "success".into(),
-        data: GenerateOGOutlineResponse {
-            og: og.clone(),
-            details: details.clone(),
-        },
-    })
-}
-
-fn parse_outline(
-    outline: String,
-    og_id: ObjectId,
-    language: String,
-) -> Result<Vec<Detail>, ServerFnError> {
-    let mut details = Vec::new();
-
-    let day_re = Regex::new(r"### Day (\d+): (.*?)\n").unwrap();
-    let place_re =
-        Regex::new(r"#### Place (\d+): (.*?)\n\*\*Estimated Duration:\*\* (\d+) minutes").unwrap();
-    let activity_re = Regex::new(r"\* (.+)").unwrap();
-
-    let mut current_position = 0;
-
-    while let Some(day_caps) = day_re.captures(&outline[current_position..]) {
-        let day_number: i32 = day_caps[1].parse().unwrap_or(1);
-        let day_title = &day_caps[2];
-
-        let day_start = current_position + day_caps.get(0).unwrap().end();
-        let next_day_pos = day_re
-            .find_at(&outline, day_start)
-            .map_or(outline.len(), |m| m.start());
-
-        let day_content = &outline[day_start..next_day_pos];
-        current_position = next_day_pos;
-
-        let mut place_pos = 0;
-        while let Some(place_caps) = place_re.captures(&day_content[place_pos..]) {
-            let place_number: i32 = place_caps[1].parse().unwrap_or(1);
-            let place_name = &place_caps[2];
-            let estimated_duration = place_caps[3].parse().unwrap_or(0);
-
-            let place_start = place_pos + place_caps.get(0).unwrap().end();
-            let next_place_pos = place_re
-                .find_at(&day_content, place_start)
-                .map_or(day_content.len(), |m| m.start());
-
-            let place_content = &day_content[place_start..next_place_pos];
-            place_pos = next_place_pos;
-
-            let bullet_points = activity_re
-                .find_iter(place_content)
-                .map(|mat| mat.as_str().to_string())
-                .collect::<Vec<String>>()
-                .join("\n");
-
-            details.push(Detail {
-                id: ObjectId::new(),
-                og_id,
-                title: format!("Day {} - {}", day_number, day_title),
-                html: format!("Place {}: {}\n{}", place_number, place_name, bullet_points),
-                estimated_duration,
-                language: language.clone(),
-                completed: false,
-                created_at: Utc::now(),
-                updated_at: Utc::now(),
-            });
-        }
-    }
-
-    Ok(details)
-}
-
-#[server]
-pub async fn generate_detail_content(
-    req: GenerateDetailContentRequest,
-) -> Result<SuccessResponse<String>, ServerFnError> {
-    let system_prompt = format!(
-        "
-        **System Prompt (SP):** You are writing detailed content for a og detail.
-
-        **Prompt (P):** Write content for detail '{detail_title}' of the og '{og_title}' in {language}. Ensure clarity, detailed explanations, and structured markdown.
-
-        **Expected Format (EF):**
-        - detailed markdown format for this detail.
-
-        **Roleplay (RP):** Provide as much educational content as possible.
-        ",
-        detail_title = req.detail_title,
-        og_title = req.og_title,
-        language = req.language,
-    );
-
-    let markdown = req.markdown;
-
-    let content_prompt = format!(
-        "Generate a comprehensive HTML-formatted og detail with examples, links and images, based on the outline: '{}' in {language}. \
-        Each section should be structured with appropriate HTML tags, including <h1> for the main title, \
-        <h2> for detail titles, <h3> for subheadings, and <p> for paragraphs. \
-        Include well-organized, readable content that aligns with the og's outline, ensuring each section is \
-        clear and logically flows from one to the next. Avoid markdown format entirely, and provide inline HTML styling \
-        if necessary to enhance readability. The HTML content should be well-formatted, semantically correct, and \
-        cover all relevant subtopics in depth to create an engaging reading experience. \
-        Make sure to always return back with html formmatted text and not empty response.
-        ",
-        markdown.clone(),
-        language = req.language,
-    );
-
-    let mut html = req.html;
-
-    html = update_detail_content(UpdateOGContentRequest {
-        og_id: req.detail_id.to_string(),
-        new_content: html.clone(),
-    })
-    .await?
-    .data;
-
-    Ok(SuccessResponse {
-        status: "success".into(),
-        data: html,
-    })
-}
-
-#[server]
-pub async fn get_details_for_og(
-    req: GetDetailContentRequest,
-) -> Result<SuccessResponse<Vec<Detail>>, ServerFnError> {
-    let client = get_client().await;
-    let db =
-        client.database(&std::env::var("MONGODB_DB_NAME").expect("MONGODB_DB_NAME must be set."));
-    let og_collection = db.collection::<Detail>("details");
-
-    let og_object_id =
-        ObjectId::parse_str(&req.og_id).map_err(|_| ServerFnError::new("Invalid og ID"))?;
-
-    let mut details = og_collection
-        .find(doc! { "og_id": og_object_id })
-        .await?
-        .try_collect::<Vec<Detail>>()
-        .await?;
-
-    for detail in details.iter_mut() {
-        if detail.html.is_empty() {
-            let markdown_content = detail.html.clone();
-
-            let content_prompt = format!(
-                "Generate a comprehensive HTML-formatted og og with examples, links and images, based on the outline: '{}' in {language}. \
-                Each section should be structured with appropriate HTML tags, including <h1> for the main title, \
-                <h2> for og titles, <h3> for subheadings, and <p> for paragraphs. \
-                Include well-organized, readable content that aligns with the og's outline, ensuring each section is \
-                clear and logically flows from one to the next. Avoid markdown format entirely, and provide inline HTML styling \
-                if necessary to enhance readability. The HTML content should be well-formatted, semantically correct, and \
-                cover all relevant subtopics in depth to create an engaging reading experience. \
-                Make sure to always return back with html formmatted text and not empty response.",
-                markdown_content,
-                language = detail.language,
-            );
-
-            let html_content = req.html.clone();
-
-            og_collection
-                .update_one(
-                    doc! { "_id": detail.id },
-                    doc! { "$set": { "html": html_content.clone(), "updatedAt": Utc::now() } },
-                )
-                .await?;
-
-            detail.html = html_content;
-        }
-    }
-
-    Ok(SuccessResponse {
-        status: "success".into(),
-        data: details,
     })
 }

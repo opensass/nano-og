@@ -1,11 +1,10 @@
 use crate::components::dashboard::fields::input::InputField;
-use crate::components::dashboard::fields::number::NumberField;
 use crate::components::spinner::Spinner;
 use crate::components::spinner::SpinnerSize;
 use crate::components::toast::manager::ToastManager;
 use crate::components::toast::manager::ToastType;
-use crate::server::og::controller::{generate_detail_content, generate_og_outline};
-use crate::server::og::request::{GenerateDetailContentRequest, GenerateOGRequest};
+use crate::server::og::controller::store_og;
+use crate::server::og::request::StoreOGRequest;
 use crate::theme::Theme;
 use crate::theme::THEME;
 use chrono::{Duration, Utc};
@@ -38,11 +37,12 @@ struct CachedOGsData {
 pub fn CreateOGPanel(user_token: Signal<String>) -> Element {
     let dark_mode = *THEME.read() == Theme::Dark;
 
-    let title = use_signal(|| "Default Title".to_string());
-    let description = use_signal(|| "Default description for the OG metadata.".to_string());
-    let site_name = use_signal(|| "Default Site Name".to_string());
-    let image_url = use_signal(|| "https://via.placeholder.com/300".to_string());
-    let author = use_signal(|| "Default Author".to_string());
+    let title = use_signal(|| "Open SASS".to_string());
+    let description =
+        use_signal(|| "Your Gateway to Secure Open-Source Rusty SaaS Solutions.".to_string());
+    let site_name = use_signal(|| "opensass.org".to_string());
+    let image_url = use_signal(|| "https://opensass.org/logo.webp".to_string());
+    let author = use_signal(|| "Mahmoud".to_string());
     let locale = use_signal(|| "en_US".to_string());
     let twitter_card = use_signal(|| "summary_large_image".to_string());
     let twitter_site = use_signal(|| "@opensassorg".to_string());
@@ -98,21 +98,21 @@ pub fn CreateOGPanel(user_token: Signal<String>) -> Element {
             return;
         }
 
-        let request = GenerateOGRequest {
-            title: title(),
-            outline: description(),
+        let request = StoreOGRequest {
             token: user_token(),
-            subtitle: site_name(),
-            model: "claude-3".to_string(),
-            subtopics: 30,
-            details: 5,
-            language: locale(),
-            max_length: 10,
+            title: title(),
+            description: description(),
+            site_name: site_name(),
+            image_url: image_url(),
+            author: author(),
+            locale: locale(),
+            twitter_card: twitter_card(),
+            twitter_site: twitter_site(),
         };
 
         spawn(async move {
-            match generate_og_outline(request).await {
-                Ok(response) => {
+            match store_og(request).await {
+                Ok(_response) => {
                     let new_metadata = Metadata {
                         title: title(),
                         description: description(),
@@ -183,87 +183,95 @@ pub fn CreateOGPanel(user_token: Signal<String>) -> Element {
 
     rsx! {
         div {
-            class: format!("flex flex-col lg:flex-row p-6 space-y-6 {}",
+            class: format!("flex flex-col p-6 space-y-6 {}",
                 if dark_mode { "bg-gray-900 text-white" } else { "bg-white text-gray-900" }
             ),
-
             div {
-                class: "flex-1 p-6 bg-gray-800 text-white rounded-lg space-y-6",
-                h2 { class: "text-3xl font-semibold", "Create OG Metadata" },
-                form {
-                    class: "grid grid-cols-1 lg:grid-cols-2 gap-6",
-                    onsubmit: handle_submit,
+                class: "grid grid-cols-1 lg:grid-cols-2 gap-6",
 
-                    InputField { label: "Title", value: title, is_valid: title_valid, validate: validate_field, required: true },
-                    InputField { label: "Description", value: description, is_valid: description_valid, validate: validate_field, required: true },
-                    InputField { label: "Site Name", value: site_name, is_valid: site_name_valid, validate: validate_field, required: false },
-                    InputField { label: "Image URL", value: image_url, is_valid: image_url_valid, validate: validate_field, required: false },
-                    InputField { label: "Author", value: author, is_valid: author_valid, validate: validate_field, required: false },
-                    InputField { label: "Locale", value: locale, is_valid: locale_valid, validate: validate_field, required: false },
-                    InputField { label: "Twitter Card Type", value: twitter_card, is_valid: twitter_card_valid, validate: validate_field, required: false },
-                    InputField { label: "Twitter Site", value: twitter_site, is_valid: twitter_site_valid, validate: validate_field, required: false },
+                div {
+                    class: format!(
+                        "p-6 rounded-lg border {}",
+                        if dark_mode { "bg-gray-800 border-gray-700" } else { "bg-white border-gray-300" }
+                    ),
+                    h2 { class: "text-2xl font-semibold mb-4", "Create OG Metadata" },
+                    form {
+                        class: "space-y-4",
+                        onsubmit: handle_submit,
 
-                    div {
-                        class: "col-span-2 flex justify-center",
-                        button {
-                            class: format!(
-                                "flex items-center justify-center px-4 py-2 rounded bg-blue-500 text-white {}",
-                                if loading() { "opacity-50 cursor-not-allowed" } else { "" }
-                            ),
-                            r#type: "submit",
-                            disabled: loading(),
-                            if loading() {
-                                Spinner {
-                                    aria_label: "Loading spinner".to_string(),
-                                    size: SpinnerSize::Md,
-                                    dark_mode,
+                        InputField { label: "Title", value: title, is_valid: title_valid, validate: validate_field, required: true },
+                        InputField { label: "Description", value: description, is_valid: description_valid, validate: validate_field, required: true },
+                        InputField { label: "Site Name", value: site_name, is_valid: site_name_valid, validate: validate_field, required: false },
+                        InputField { label: "Brand Image", value: image_url, is_valid: image_url_valid, validate: validate_field, required: false },
+                        InputField { label: "Author", value: author, is_valid: author_valid, validate: validate_field, required: false },
+                        InputField { label: "Locale", value: locale, is_valid: locale_valid, validate: validate_field, required: false },
+                        InputField { label: "Twitter Card Type", value: twitter_card, is_valid: twitter_card_valid, validate: validate_field, required: false },
+                        InputField { label: "Twitter Site", value: twitter_site, is_valid: twitter_site_valid, validate: validate_field, required: false },
+
+                        div {
+                            class: "col-span-2 flex justify-center",
+                            button {
+                                class: format!(
+                                    "flex items-center justify-center px-4 py-2 rounded bg-blue-500 text-white {}",
+                                    if loading() { "opacity-50 cursor-not-allowed" } else { "" }
+                                ),
+                                r#type: "submit",
+                                disabled: loading(),
+                                if loading() {
+                                    Spinner {
+                                        aria_label: "Loading spinner".to_string(),
+                                        size: SpinnerSize::Md,
+                                        dark_mode,
+                                    }
+                                    span { "Generating..." }
+                                } else {
+                                    span { "Generate" }
                                 }
-                                span { "Generating..." }
-                            } else {
-                                span { "Generate" }
                             }
                         }
                     }
-                }
-            },
+                },
 
-            div {
-                class: "flex-1 space-y-6 p-6 bg-gray-700 rounded-lg h-full",
-                h3 { class: "text-xl font-semibold text-white", "Preview" },
                 div {
-                    class: "w-full h-64 rounded-lg overflow-hidden relative",
+                    class: format!(
+                        "p-6 rounded-lg border flex flex-col justify-between {}",
+                        if dark_mode { "bg-gray-800 border-gray-700" } else { "bg-white border-gray-300" }
+                    ),
+                    h3 { class: "text-2xl font-semibold mb-4", "Preview" },
+
                     div {
-                        class: "relative bg-gradient-to-r from-purple-300 to-pink-300 p-6 rounded-lg shadow-md text-gray-900 w-full h-full",
-                        div {
-                            class: "absolute top-4 left-4 text-xl font-bold",
+                        class: "relative bg-gradient-to-r from-purple-300 to-pink-300 p-4 rounded-lg shadow-md w-full h-full aspect-w-16 aspect-h-9",
+                        h1 {
+                            class: "absolute top-4 left-4 text-4xl font-bold text-gray-900",
                             "{title()}"
                         },
                         div {
-                            class: "absolute top-12 left-4 text-md font-medium",
+                            class: "absolute top-1/4 left-4 text-xl text-gray-900",
                             "{description()}"
                         },
-                        div {
-                            class: "absolute bottom-4 left-4 text-sm italic",
+                        h3 {
+                            class: "absolute bottom-4 left-4 text-sm text-gray-900 italic",
                             "Author: {author()} | Site: {site_name()}"
                         },
                         img {
                             class: "absolute top-0 right-0 w-24 h-24 rounded-full shadow-lg",
                             src: "{image_url()}",
-                            alt: "Preview Thumbnail"
+                            alt: "Brand Logo"
                         }
-                    }
-                }
-                div {
-                    class: "p-4 bg-gray-800 rounded-md text-sm text-white",
-                    h4 { class: "text-lg font-semibold mb-2", "Generated Meta Tags" },
-                    pre {
-                        class: "bg-gray-900 p-4 rounded overflow-x-auto",
-                        "{generate_meta_tags(generated_metadata().unwrap_or_default())}"
                     },
-                    button {
-                        class: "mt-4 px-4 py-2 bg-indigo-500 text-white rounded-md",
-                        onclick: copy_to_clipboard,
-                        "Copy to Clipboard"
+
+                    div {
+                        class: "mt-6 bg-gray-900 text-white p-4 rounded-lg shadow-md",
+                        h4 { class: "text-lg font-semibold mb-2", "Generated Meta Tags" },
+                        pre {
+                            class: "bg-gray-800 p-3 rounded text-sm overflow-x-auto",
+                            "{generate_meta_tags(generated_metadata().unwrap_or_default())}"
+                        },
+                        button {
+                            class: "mt-4 px-4 py-2 bg-indigo-500 text-white rounded-md hover:bg-indigo-600 transition",
+                            onclick: copy_to_clipboard,
+                            "Copy to Clipboard"
+                        }
                     }
                 }
             }

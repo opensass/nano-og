@@ -1,19 +1,12 @@
 use crate::components::dashboard::ogs::list::CachedOGsData;
 use crate::components::dashboard::ogs::list::CACHE_KEY;
 use crate::components::dashboard::ogs::list::CACHE_TIMEOUT;
-use crate::components::dashboard::ogs::read::CachedDetailData;
-use crate::components::dashboard::ogs::read::CHAPTERS_CACHE_KEY;
-use crate::components::dashboard::ogs::read::CHAPTERS_CACHE_TIMEOUT;
 use crate::server::conversation::controller::get_messages;
 use crate::server::conversation::controller::save_message_to_db;
 use crate::server::conversation::model::Message;
 use crate::server::conversation::request::GetMessagesRequest;
-use crate::server::conversation::request::SendQueryRequest;
-use crate::server::og::controller::get_details_for_og;
 use crate::server::og::controller::get_ogs_for_user;
-use crate::server::og::model::Detail;
 use crate::server::og::model::OG;
-use crate::server::og::request::GetDetailContentRequest;
 use crate::server::og::request::GetOGsForUserRequest;
 use gloo_storage::Storage;
 
@@ -48,8 +41,6 @@ pub fn ChatPanel(conversation_id: Signal<ObjectId>, user_token: Signal<String>) 
     let mut messages = use_signal(Vec::<Message>::new);
     let mut input_query = use_signal(|| "".to_string());
     let mut selected_og = use_signal(|| None::<OG>);
-    let mut selected_detail = use_signal(|| None::<Detail>);
-    let mut details = use_signal(Vec::<Detail>::new);
     let mut ogs = use_signal(Vec::<OG>::new);
     let mut thinking = use_signal(|| false);
     let mut loading = use_signal(|| false);
@@ -93,49 +84,6 @@ pub fn ChatPanel(conversation_id: Signal<ObjectId>, user_token: Signal<String>) 
     });
 
     use_effect(move || {
-        let og_id = selected_og().unwrap_or_default().id.to_string();
-        spawn(async move {
-            let now = Utc::now().timestamp();
-
-            if let Ok(cached_data) = LocalStorage::get::<CachedDetailData>(CHAPTERS_CACHE_KEY) {
-                if cached_data.og_id == og_id
-                    && now - cached_data.timestamp < CHAPTERS_CACHE_TIMEOUT
-                {
-                    // loading.set(false);
-                    details.set(cached_data.data.clone());
-                    if let Some(first_detail) = cached_data.data.first() {
-                        selected_detail.set(Some(first_detail.clone()));
-                    }
-                    return;
-                }
-            }
-
-            if let Ok(response) = get_details_for_og(GetDetailContentRequest {
-                og_id: og_id.clone(),
-                html: og_id.clone(),
-            })
-            .await
-            {
-                // loading.set(false);
-                details.set(response.data.clone());
-
-                let cached_data = CachedDetailData {
-                    og_id: og_id.clone(),
-                    data: response.data.clone(),
-                    timestamp: now,
-                };
-                let _ = LocalStorage::set(CHAPTERS_CACHE_KEY, &cached_data);
-
-                if let Some(first_detail) = response.data.first() {
-                    selected_detail.set(Some(first_detail.clone()));
-                }
-            } else {
-                // loading.set(true);
-            }
-        });
-    });
-
-    use_effect(move || {
         let conversation_id = conversation_id();
         spawn(async move {
             let now = Utc::now().timestamp();
@@ -173,11 +121,9 @@ pub fn ChatPanel(conversation_id: Signal<ObjectId>, user_token: Signal<String>) 
 
     let mut handle_send_query = {
         move || {
-            if !input_query().is_empty() && selected_og().is_some() && selected_detail().is_some() {
+            if !input_query().is_empty() && selected_og().is_some() && selected_og().is_some() {
                 thinking.set(true);
                 let query_text = input_query();
-                let og = selected_og().unwrap();
-                let detail = selected_detail().unwrap();
 
                 let user_message = Message {
                     id: ObjectId::new(),
@@ -191,7 +137,9 @@ pub fn ChatPanel(conversation_id: Signal<ObjectId>, user_token: Signal<String>) 
                 current_messages.push(user_message.clone());
                 messages.set(current_messages);
 
-                // save_message_to_db(user_message).await.unwrap();
+                spawn(async move {
+                    save_message_to_db(user_message).await.unwrap();
+                });
 
                 input_query.set("".to_string());
             }
@@ -201,23 +149,6 @@ pub fn ChatPanel(conversation_id: Signal<ObjectId>, user_token: Signal<String>) 
         for og in ogs().into_iter() {
             if og.id.to_string() == og_id {
                 selected_og.set(Some(og.clone()));
-
-                spawn({
-                    async move {
-                        if let Ok(response) = get_details_for_og(GetDetailContentRequest {
-                            og_id: og.id.to_string(),
-                            html: og_id.clone(),
-                        })
-                        .await
-                        {
-                            details.set(response.data.clone());
-
-                            if let Some(first_detail) = response.data.first() {
-                                selected_detail.set(Some(first_detail.clone()));
-                            }
-                        }
-                    }
-                });
 
                 break;
             }
@@ -243,20 +174,6 @@ pub fn ChatPanel(conversation_id: Signal<ObjectId>, user_token: Signal<String>) 
                     option { value: "", "Select a og" },
                     for og in ogs().iter() {
                         option { value: "{og.id}", "{truncate(og.title.clone(), 20)}" }
-                    }
-                }
-
-                select {
-                    class: format!(
-                        "p-2 rounded-lg flex-grow w-full md:w-auto truncate {}",
-                        if *THEME.read() == Theme::Dark { "bg-gray-700 text-white" } else { "bg-gray-100 text-black" }
-                    ),
-                    onchange: move |evt| selected_detail.set(
-                        details().iter().find(|detail| detail.id.to_string() == evt.value()).cloned()
-                    ),
-                    option { value: "", "Select a detail" },
-                    for detail in details().iter() {
-                        option { value: "{detail.id}", "{truncate(detail.title.clone(), 20)}" }
                     }
                 }
             }

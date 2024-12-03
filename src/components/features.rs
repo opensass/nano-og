@@ -2,7 +2,6 @@ pub(crate) mod grid;
 pub(crate) mod item;
 
 use crate::components::features::grid::Grid;
-use crate::components::features::item::FeatureItem;
 use crate::theme::Theme;
 use crate::theme::THEME;
 use dioxus::prelude::*;

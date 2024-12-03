@@ -72,12 +72,7 @@ pub fn OGsPanel(user_token: Signal<String>) -> Element {
                     true
                 } else {
                     let title_matches = og.title.to_lowercase().contains(&query);
-                    let subtitle_matches = og
-                        .subtitle
-                        .as_deref()
-                        .map(|s| s.to_lowercase().contains(&query))
-                        .unwrap_or(false);
-                    title_matches || subtitle_matches
+                    title_matches
                 };
 
                 matches_query
@@ -111,39 +106,28 @@ pub fn OGsPanel(user_token: Signal<String>) -> Element {
                     }
                 }
                 h2 { class: "text-xl font-semibold mb-4", "All OGs" }
-                if displayed_ogs.len() > 0 {
+                if displayed_ogs().len() > 0 {
                     div {
                         class: "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6",
                         for og in displayed_ogs() {
                             Link {
-                                to: Route::ReadOG { id: og.id.to_string() },
+                                to: Route::ViewOG { id: og.id.to_string() },
                                 class: format!(
                                     "p-4 shadow rounded-lg {}",
                                     if dark_mode { "bg-gray-700" } else { "bg-gray-100" }
                                 ),
-                                p {
-                                    class: "mt-2 text-sm text-gray-700",
-                                    "{og.subtitle.expect(\"REASON\")}"
-                                }
                                 img {
-                                    src: og.cover.as_deref().unwrap_or("/path/to/default-cover.jpg"),
+                                    src: og.image_url,
                                     alt: "OG cover",
                                     class: "w-full h-48 object-cover rounded-md mb-4"
                                 }
                                 p {
                                     class: "text-sm text-gray-500 mb-2",
-                                    "{og.created_at.format(\"%B %d, %Y\")} · {og.title.len() / 7000} min read"
+                                    "{og.created_at.format(\"%B %d, %Y\")}"
                                 }
                                 p {
-                                    class: format!(
-                                        "text-sm {}",
-                                        if og.completed { "text-green-600" } else { "text-red-600" }
-                                    ),
-                                    if og.completed { "Completed" } else { "In Progress" }
-                                }
-                                p {
-                                    class: "mt-2 text-sm text-gray-700",
-                                    "{og.title.chars().take(30).collect::<String>()}..."
+                                    class: "mt-2 text-xl text-gray-100",
+                                    "{og.title.chars().take(30).collect::<String>()}"
                                 }
                             }
                         }

@@ -235,6 +235,7 @@ pub fn Login() -> Element {
                         }
                     },
                     button {
+                        r#type: "button",
                         onclick: move |_| show_password.set(!show_password()),
                         class: "absolute inset-y-0 right-0 pr-3 text-gray-500 hover:text-gray-700",
                         if show_password() {
@@ -285,8 +286,8 @@ pub fn Login() -> Element {
                 div {
                     class: "text-gray-500 mt-4",
                     "Don't have an account? ",
-                    a {
-                        href: "#",
+                    Link {
+                        to: "/signup",
                         class: "text-blue-500 font-semibold hover:underline",
                         "Sign up"
                     }

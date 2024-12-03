@@ -2,7 +2,7 @@ use crate::components::dashboard::chat::ChatPanelPage;
 use crate::components::dashboard::navbar::Navbar;
 use crate::components::dashboard::ogs::create::CreateOGPanel;
 use crate::components::dashboard::ogs::list::OGsPanel;
-use crate::components::dashboard::ogs::read::ReadOGPanel;
+use crate::components::dashboard::ogs::read::ViewOGPanel;
 use crate::components::dashboard::profile::EditProfilePanel;
 use crate::components::dashboard::sidebar::Sidebar;
 use crate::components::dashboard::sidebar::Tab;
@@ -30,7 +30,7 @@ pub fn Dashboard() -> Element {
     let current_tab = match active_tab() {
         Tab::OGs => rsx! { OGsPanel { user_token } },
         Tab::CreateOG => rsx! { CreateOGPanel { user_token } },
-        Tab::ReadOG => rsx! { ReadOGPanel { og_id: "" } },
+        Tab::ViewOG => rsx! { ViewOGPanel { og_id: "", user_token } },
         Tab::EditProfile => rsx! { EditProfilePanel {} },
         Tab::Chat => rsx! { ChatPanelPage { user_token, og_id: ""} },
     };

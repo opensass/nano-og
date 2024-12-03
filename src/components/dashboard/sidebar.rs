@@ -12,7 +12,7 @@ pub enum Tab {
     OGs,
     Chat,
     CreateOG,
-    ReadOG,
+    ViewOG,
     EditProfile,
 }
 
@@ -90,16 +90,16 @@ pub fn Sidebar(active_tab: Signal<Tab>, navigate: bool) -> Element {
                     height: 30,
                     icon: FaFileLines,
                 },
-                span { class: "hidden md:inline", "Plan" }
+                span { class: "hidden md:inline", "Generate" }
             }
-            div { class: tab_style(Tab::ReadOG),
-                onclick: move |_| active_tab.set(Tab::ReadOG),
+            div { class: tab_style(Tab::ViewOG),
+                onclick: move |_| active_tab.set(Tab::ViewOG),
                 Icon {
                     width: 30,
                     height: 30,
                     icon: FaAddressBook,
                 },
-                span { class: "hidden md:inline", "Explore OG" }
+                span { class: "hidden md:inline", "View OG" }
             }
             div { class: tab_style(Tab::EditProfile),
                 onclick: move |_| {

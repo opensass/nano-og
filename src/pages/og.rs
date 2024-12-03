@@ -4,7 +4,7 @@ use crate::components::dashboard::chat::ChatPanelPage;
 use crate::components::dashboard::navbar::Navbar;
 use crate::components::dashboard::ogs::create::CreateOGPanel;
 use crate::components::dashboard::ogs::list::OGsPanel;
-use crate::components::dashboard::ogs::read::ReadOGPanel;
+use crate::components::dashboard::ogs::read::ViewOGPanel;
 use crate::components::dashboard::profile::EditProfilePanel;
 use crate::components::dashboard::sidebar::Sidebar;
 use crate::components::dashboard::sidebar::Tab;
@@ -17,8 +17,8 @@ use gloo_storage::SessionStorage;
 use gloo_storage::Storage;
 
 #[component]
-pub fn ReadOG(id: String) -> Element {
-    let active_tab = use_signal(|| Tab::ReadOG);
+pub fn ViewOG(id: String) -> Element {
+    let active_tab = use_signal(|| Tab::ViewOG);
     let dark_mode = *THEME.read() == Theme::Dark;
     let mut user_token = use_signal(|| "".to_string());
     let navigator = use_navigator();
@@ -27,12 +27,12 @@ pub fn ReadOG(id: String) -> Element {
         current_tab = match active_tab() {
             Tab::OGs => rsx! { OGsPanel { user_token } },
             Tab::CreateOG => rsx! { CreateOGPanel { user_token } },
-            Tab::ReadOG => rsx! { ReadOGPanel { og_id: id } },
+            Tab::ViewOG => rsx! { ViewOGPanel { og_id: id, user_token } },
             Tab::EditProfile => rsx! { EditProfilePanel {} },
             Tab::Chat => rsx! { ChatPanelPage { user_token, og_id: id} },
         };
     } else {
-        current_tab = rsx! { ReadOGPanel { og_id: id } };
+        current_tab = rsx! { ViewOGPanel { og_id: id, user_token } };
     }
 
     use_effect(move || {
@@ -71,7 +71,7 @@ pub fn ReadOG(id: String) -> Element {
 
 #[component]
 pub fn EditOG(id: String) -> Element {
-    let active_tab = use_signal(|| Tab::ReadOG);
+    let active_tab = use_signal(|| Tab::ViewOG);
     let dark_mode = *THEME.read() == Theme::Dark;
     let mut user_token = use_signal(|| "".to_string());
     let navigator = use_navigator();
@@ -79,7 +79,7 @@ pub fn EditOG(id: String) -> Element {
     if id.is_empty() {
         current_tab = match active_tab() {
             Tab::OGs => rsx! { OGsPanel { user_token } },
-            Tab::ReadOG => rsx! { ReadOGPanel { og_id: id } },
+            Tab::ViewOG => rsx! { ViewOGPanel { og_id: id , user_token } },
             Tab::EditProfile => rsx! { EditProfilePanel {} },
             Tab::Chat => rsx! { ChatPanelPage { user_token, og_id: id} },
             Tab::CreateOG => todo!(),

@@ -19,7 +19,6 @@ use crate::server::conversation::response::ConversationResponse;
 use crate::server::conversation::response::ConversationsListResponse;
 use crate::server::conversation::response::MessageResponse;
 use crate::server::conversation::response::MessagesListResponse;
-use crate::server::og::model::Detail;
 use crate::server::og::model::OG;
 use bson::oid::ObjectId;
 use chrono::prelude::*;

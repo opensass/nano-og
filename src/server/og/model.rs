@@ -10,28 +10,17 @@ pub struct OG {
     pub id: ObjectId,
     pub user: ObjectId,
     pub title: String,
-    pub subtitle: Option<String>,
-    #[serde(rename = "ogType")]
-    pub og_type: Option<String>,
-    #[serde(rename = "mainTopic")]
-    pub completed: bool,
-    pub cover: Option<String>,
-    #[serde(with = "chrono_datetime_as_bson_datetime", rename = "createdAt")]
-    pub created_at: DateTime<Utc>,
-    #[serde(with = "chrono_datetime_as_bson_datetime", rename = "updatedAt")]
-    pub updated_at: DateTime<Utc>,
-}
-
-#[derive(Debug, Deserialize, Serialize, Clone)]
-pub struct Detail {
-    #[serde(rename = "_id")]
-    pub id: ObjectId,
-    pub og_id: ObjectId,
-    pub title: String,
-    pub html: String,
-    pub estimated_duration: u64,
-    pub language: String,
-    pub completed: bool,
+    pub description: String,
+    #[serde(rename = "siteName")]
+    pub site_name: String,
+    #[serde(rename = "imageUrl")]
+    pub image_url: String,
+    pub author: String,
+    pub locale: String,
+    #[serde(rename = "twitterCard")]
+    pub twitter_card: String,
+    #[serde(rename = "twitterSite")]
+    pub twitter_site: String,
     #[serde(with = "chrono_datetime_as_bson_datetime", rename = "createdAt")]
     pub created_at: DateTime<Utc>,
     #[serde(with = "chrono_datetime_as_bson_datetime", rename = "updatedAt")]

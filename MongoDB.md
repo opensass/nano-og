@@ -51,7 +51,7 @@ Now that your MongoDB cluster is ready, you'll configure your project to connect
      MONGODB_USR=
      MONGODB_PWD=
      MONGODB_CLSTR=your-cluster.mongodb.net
-     MONGODB_DB_NAME=nano-ogs
+     MONGODB_DB_NAME=nano-details
      ```
    - Replace `<MONGODB_USR>`, `<MONGODB_PWD>`, and `<MONGODB_CLSTR>` with your specific information. `MONGODB_DB_NAME` can be any database name you'd like; for this guide, we'll use "nano-og".
 

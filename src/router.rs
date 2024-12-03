@@ -6,7 +6,7 @@ use crate::pages::dashboard::Dashboard;
 use crate::pages::home::Home;
 use crate::pages::login::Login;
 use crate::pages::og::EditOG;
-use crate::pages::og::ReadOG;
+use crate::pages::og::ViewOG;
 use crate::pages::signup::Register;
 use dioxus::prelude::*;
 
@@ -16,15 +16,14 @@ pub enum Route {
     #[route("/")]
     Home {},
     #[end_layout]
-    // TODO: file an issue cz of ordering layout and router macros
     #[layout(LoginNavBar)]
     #[route("/login")]
     Login {},
     #[route("/signup")]
     Register {},
     #[end_layout]
-    #[route("/dashboard/og/read/:id")]
-    ReadOG { id: String },
+    #[route("/dashboard/og/view/:id")]
+    ViewOG { id: String },
     #[route("/dashboard/og/edit/:id")]
     EditOG { id: String },
     #[route("/dashboard")]
