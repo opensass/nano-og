@@ -140,6 +140,6 @@ Navigate to [http://localhost:3000](http://localhost:3000) to access Nano OG.
 Nano OG is licensed under the [MIT License](./LICENSE).
 Feel free to use, modify, and distribute this project within the terms of the license.
 
-### 💬 Need Help?
+## 💬 Need Help?
 
 Join the conversation on [Discord](https://discord.com/invite/b5JbvHW5nv) or open an issue on [GitHub](https://github.com/opensass/nano-og/issues).
