@@ -20,7 +20,7 @@
 
 ## 📐 Architecture
 
-![Arch](https://github.com/user-attachments/assets/27eda1f7-786a-431e-bb0d-03a9d001c3bf)
+![Arch](https://github.com/user-attachments/assets/9f4da22c-729e-40fd-a4c2-c1e57a8f503d)
 
 ## 📸 Demo
 
