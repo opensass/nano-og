@@ -24,7 +24,9 @@
 
 ## 📸 Demo
 
-https://github.com/user-attachments/assets/04bee24e-58a8-4845-8eff-bbdeefe3a6af
+| 🐧 Linux `(Recommended)` | 🪟 Windows |
+| :------: | :------: |
+| <video src="https://github.com/user-attachments/assets/04bee24e-58a8-4845-8eff-bbdeefe3a6af"></video> | <video src="https://github.com/user-attachments/assets/f129e604-460d-4664-8dc4-921045c7e3e5"></video> |
 
 ## 🚀 About Nano OG
 
