@@ -11,7 +11,6 @@
 
 | 🐧 Linux `(Recommended)` | 🪟 Windows |
 | :------: | :------: |
-| <video src="https://github.com/user-attachments/assets/aaa3b858-8f81-4c92-9cdc-c18e6300b48d"></video> | <video src="https://github.com/user-attachments/assets/9b593e2b-6c22-406e-93b7-d620448f82e7"></video> |
 | [**Download Executable**](https://github.com/opensass/nano-og/releases/download/v0.0.1/dist.zip) | [**Download Executable**](https://github.com/opensass/nano-og/releases/download/v0.0.1/dist.rar) |
 | [**Set Environment Variables**](https://github.com/opensass/nano-og#-setting-up-env-vars) | [**Set Environment Variables**](https://github.com/opensass/nano-og#-setting-up-env-vars) |
 | unzip files | unzip files |
@@ -21,11 +20,11 @@
 
 ## 📐 Architecture
 
-![Arch](https://github.com/user-attachments/assets/b5af3f0b-1855-4510-853a-f4258e81cccd)
+![Arch](https://github.com/user-attachments/assets/27eda1f7-786a-431e-bb0d-03a9d001c3bf)
 
 ## 📸 Demo
 
-![Arch](https://github.com/user-attachments/assets/b5af3f0b-1855-4510-853a-f4258e81cccd)
+https://github.com/user-attachments/assets/04bee24e-58a8-4845-8eff-bbdeefe3a6af
 
 ## 🚀 About Nano OG
 
