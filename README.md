@@ -7,7 +7,7 @@
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/nano-og)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-[![Open SASS Discord](https://dcbadge.limes.pink/api/server/dGCPR6bq)](https://discord.gg/dGCPR6bq)
+[![Open SASS Discord](https://dcbadge.limes.pink/api/server/b5JbvHW5nv)](https://discord.com/invite/b5JbvHW5nv)
 
 | 🐧 Linux `(Recommended)` | 🪟 Windows |
 | :------: | :------: |
@@ -142,4 +142,4 @@ Feel free to use, modify, and distribute this project within the terms of the li
 
 ### 💬 Need Help?
 
-Join the conversation on [Discord](https://discord.gg/dGCPR6bq) or open an issue on [GitHub](https://github.com/opensass/nano-og/issues).
+Join the conversation on [Discord](https://discord.com/invite/b5JbvHW5nv) or open an issue on [GitHub](https://github.com/opensass/nano-og/issues).
