@@ -5,7 +5,7 @@ use crate::components::dashboard::navbar::Navbar;
 use crate::components::dashboard::ogs::create::CreateOGPanel;
 use crate::components::dashboard::ogs::list::OGsPanel;
 use crate::components::dashboard::ogs::read::ViewOGPanel;
-use crate::components::dashboard::profile::EditProfilePanel;
+use crate::components::dashboard::profile::ProfilePagePanel;
 use crate::components::dashboard::sidebar::Sidebar;
 use crate::components::dashboard::sidebar::Tab;
 use crate::server::auth::controller::about_me;
@@ -28,7 +28,7 @@ pub fn ViewOG(id: String) -> Element {
             Tab::OGs => rsx! { OGsPanel { user_token } },
             Tab::CreateOG => rsx! { CreateOGPanel { user_token } },
             Tab::ViewOG => rsx! { ViewOGPanel { og_id: id, user_token } },
-            Tab::EditProfile => rsx! { EditProfilePanel {} },
+            Tab::EditProfile => rsx! { ProfilePagePanel {} },
             Tab::Chat => rsx! { ChatPanelPage { user_token, og_id: id} },
         };
     } else {
@@ -80,7 +80,7 @@ pub fn EditOG(id: String) -> Element {
         current_tab = match active_tab() {
             Tab::OGs => rsx! { OGsPanel { user_token } },
             Tab::ViewOG => rsx! { ViewOGPanel { og_id: id , user_token } },
-            Tab::EditProfile => rsx! { EditProfilePanel {} },
+            Tab::EditProfile => rsx! { ProfilePagePanel {} },
             Tab::Chat => rsx! { ChatPanelPage { user_token, og_id: id} },
             Tab::CreateOG => todo!(),
         };

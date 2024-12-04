@@ -26,7 +26,7 @@ pub fn InputField(
             }
             input {
                 class: format!(
-                    "mt-1 block w-full p-2 border rounded-md shadow-sm {} {}",
+                    "flex-grow mt-1 block w-full p-2 border rounded-md shadow-sm {} {}",
                     if dark_mode { "bg-gray-900" } else { "" },
                     if is_valid() { "border-gray-300" } else { "border-red-500"
                 }),

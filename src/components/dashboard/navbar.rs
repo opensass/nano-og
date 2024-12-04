@@ -43,7 +43,6 @@ pub fn Navbar(dark_mode: bool) -> Element {
                     }
                     if show_dropdown() {
                         div { class: format!("absolute right-0 mt-2 w-48 shadow-lg rounded-lg {}", if dark_mode { "bg-gray-800" } else { "bg-white" }),
-                            button { class: format!("w-full text-left px-4 py-2 hover:bg-gray-100 {}", if dark_mode { "hover:bg-gray-700" } else { "" }), "Profile" }
                             button {
                                 class: "w-full text-left px-4 py-2 hover:bg-gray-100",
                                 onclick: handle_logout,

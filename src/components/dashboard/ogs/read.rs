@@ -29,6 +29,21 @@ pub fn ViewOGPanel(og_id: String, user_token: Signal<String>) -> Element {
             }
         }
     });
+    fn download_preview_as_image() {
+        client! {
+            eval(r#"
+                const element = document.getElementById('preview-section');
+                if (element) {
+                    html2canvas(element).then((canvas) => {
+                        const link = document.createElement('a');
+                        link.download = 'og-preview.png';
+                        link.href = canvas.toDataURL('image/png');
+                        link.click();
+                    });
+                }
+            "#);
+        }
+    }
 
     rsx! {
         div {
@@ -38,24 +53,34 @@ pub fn ViewOGPanel(og_id: String, user_token: Signal<String>) -> Element {
                 class: "flex-1 p-6 overflow-y-auto",
                 if let Some(og) = selected_og() {
                     div {
+                        id: "preview-section",
                         class: "relative bg-gradient-to-r from-purple-300 to-pink-300 p-4 rounded-lg shadow-md min-h-screen w-full aspect-w-16 aspect-h-9",
                         h1 {
                             class: "absolute top-4 left-4 text-4xl font-bold text-gray-900",
+                            contenteditable: true,
                             "{og.title}"
                         },
                         div {
-                            class: "absolute top-1/4 left-4 text-xl text-gray-900",
+                            class: "absolute top-1/3 left-4 text-xl text-gray-900",
+                            contenteditable: true,
                             "{og.description}"
                         },
                         h3 {
                             class: "absolute bottom-4 left-4 text-sm text-gray-900 italic",
+                            contenteditable: true,
                             "Author: {og.author} | Site: {og.site_name}"
                         },
                         img {
-                            class: "absolute top-0 right-0 w-24 h-24 rounded-full shadow-lg",
-                            src: "{og.image_url}",
+                            class: "absolute top-0 right-0 w-24 h-24 shadow-lg m-4",
+                            src: "{og.brand_url}",
                             alt: "Brand Logo"
                         }
+                    }
+                    button {
+                        class: "mt-4 px-4 py-2 bg-indigo-500 text-white rounded-md hover:bg-green-600 transition",
+                        onclick: move |_| { download_preview_as_image() },
+                        r#type: "button",
+                        "Download as Image"
                     }
                 } else {
                     p {
