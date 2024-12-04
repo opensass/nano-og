@@ -73,11 +73,7 @@ pub fn Features() -> Element {
 
                 div {
                     class: "relative mb-12 space-y-6",
-                    img {
-                        src: "features.webp",
-                        alt: "Nano AI Icon",
-                        class: "w-28 h-28 mx-auto animate-spin-slow hover:animate-spin"
-                    }
+
                     h2 {
                         class: format!(
                             "text-3xl md:text-5xl font-extrabold tracking-tight {}",

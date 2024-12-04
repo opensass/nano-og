@@ -15,6 +15,8 @@ pub struct OG {
     pub site_name: String,
     #[serde(rename = "imageUrl")]
     pub image_url: String,
+    #[serde(rename = "brandUrl")]
+    pub brand_url: String,
     pub author: String,
     pub locale: String,
     #[serde(rename = "twitterCard")]

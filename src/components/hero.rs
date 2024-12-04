@@ -41,8 +41,8 @@ pub fn Hero() -> Element {
                         class: "bg-indigo-500 text-white py-3 px-8 rounded-full shadow-lg hover:bg-indigo-600 focus:outline-none transform hover:scale-105 transition-transform duration-150 font-semibold",
                         "Explore Features"
                     },
-                    a {
-                        href: "#demo",
+                    Link {
+                        to: "/login",
                         class: format!(
                             "py-3 px-8 rounded-full shadow-lg focus:outline-none transform hover:scale-105 transition-transform duration-150 font-semibold {}",
                             if dark_mode == Theme::Dark {

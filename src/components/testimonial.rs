@@ -28,8 +28,8 @@ pub fn Testimonial() -> Element {
             quote: "I asked Nano OG to generate an OG image for my website... and somehow, I ended up with a neon spaceship and a llama in sunglasses. 10/10 would og again!",
             author_name: "Jeff Bezos",
             author_title: "Founder, Amazon",
-            author_image: "./elon.webp",
-            company_logo: "./spacex.webp",
+            author_image: "https://substack-post-media.s3.amazonaws.com/public/images/e218d24d-c799-4b18-825d-32be27208a27_752x349.jpeg",
+            company_logo: "https://banner2.cleanpng.com/20180825/xoa/kisspng-amazon-com-logo-brand-amazon-prime-video-product-amazon-offers-boat-bassheads-225-in-ear-super-ex-1713948584668.webp",
             star_images: vec![rsx! {Icon {
                 width: 30,
                 height: 30,
@@ -40,8 +40,8 @@ pub fn Testimonial() -> Element {
             quote: "I told Nano OG I needed a website header. It gave me a flying cat riding a skateboard. Not what I expected, but I can't look away. Genius work!",
             author_name: "Mark Zuckerberg",
             author_title: "CEO, Meta",
-            author_image: "./elon.webp",
-            company_logo: "./spacex.webp",
+            author_image: "https://euromedia24.com/storage/images/posts/1726912294.webp",
+            company_logo: "https://logowik.com/content/uploads/images/facebook-meta1731.logowik.com.webp",
             star_images: vec![rsx! {Icon {
                 width: 30,
                 height: 30,

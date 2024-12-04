@@ -2,8 +2,8 @@ pub mod components;
 #[cfg(feature = "server")]
 pub(crate) mod db;
 pub(crate) mod pages;
+#[cfg(feature = "server")]
+pub(crate) mod pinata;
 pub mod router;
 pub(crate) mod server;
 pub mod theme;
-#[cfg(feature = "server")]
-pub(crate) mod unsplash;
