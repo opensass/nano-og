@@ -67,7 +67,7 @@ Prefer compiling everything from scratch? Here's what you'll need to get started
 1. **Install `Dioxus CLI`**:
 
    ```sh
-   cargo install dioxus-cli
+   cargo install dioxus-cli@0.5.6
    ```
 
 1. **Clone the Repository**:
