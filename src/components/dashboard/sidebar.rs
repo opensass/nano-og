@@ -1,7 +1,6 @@
 use crate::components::common::logo::Logo;
 use crate::router::Route;
 use crate::theme::Theme;
-use crate::theme::THEME;
 use dioxus::prelude::*;
 
 #[derive(PartialEq, Clone)]
@@ -15,7 +14,8 @@ pub enum Tab {
 
 #[component]
 pub fn Sidebar(active_tab: Signal<Tab>, navigate: bool) -> Element {
-    let dark_mode = *THEME.read() == Theme::Dark;
+    let theme = use_context::<Signal<Theme>>();
+    let dark_mode = theme() == Theme::Dark;
     let navigator = use_navigator();
 
     let tab_style = |tab: Tab| -> String {
@@ -53,8 +53,8 @@ pub fn Sidebar(active_tab: Signal<Tab>, navigate: bool) -> Element {
                     active_tab.set(Tab::OGs);
                 },
                 i {
-                    width: 100,
-                    height: 100,
+                    width: 30,
+                    height: 30,
                     class: "fa-solid fa-folder-open",
                 },
                 span { class: "hidden md:inline", "OGs" }
@@ -68,8 +68,8 @@ pub fn Sidebar(active_tab: Signal<Tab>, navigate: bool) -> Element {
                     active_tab.set(Tab::Chat);
                 },
                 i {
-                    width: 100,
-                    height: 100,
+                    width: 30,
+                    height: 30,
                     class: "fa-solid fa-message",
                 },
                 span { class: "hidden md:inline", "Chat" }
@@ -83,8 +83,8 @@ pub fn Sidebar(active_tab: Signal<Tab>, navigate: bool) -> Element {
                     active_tab.set(Tab::CreateOG);
                 },
                 i {
-                    width: 100,
-                    height: 100,
+                    width: 30,
+                    height: 30,
                     class: "fa-solid fa-file-lines",
                 },
                 span { class: "hidden md:inline", "Generate" }
@@ -92,8 +92,8 @@ pub fn Sidebar(active_tab: Signal<Tab>, navigate: bool) -> Element {
             div { class: tab_style(Tab::ViewOG),
                 onclick: move |_| active_tab.set(Tab::ViewOG),
                 i {
-                    width: 100,
-                    height: 100,
+                    width: 30,
+                    height: 30,
                     class: "fa-solid fa-address-book",
                 },
                 span { class: "hidden md:inline", "View OG" }
@@ -106,8 +106,8 @@ pub fn Sidebar(active_tab: Signal<Tab>, navigate: bool) -> Element {
                     active_tab.set(Tab::EditProfile);
                 },
                 i {
-                    width: 100,
-                    height: 100,
+                    width: 30,
+                    height: 30,
                     class: "fa-regular fa-pen-to-square",
                 },
                 span { class: "hidden md:inline", "Profile" }

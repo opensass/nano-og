@@ -6,7 +6,6 @@ use crate::components::dashboard::profile::view::ProfileDetails;
 use crate::server::auth::controller::about_me;
 use crate::server::auth::model::User;
 use crate::theme::Theme;
-use crate::theme::THEME;
 
 use dioxus::prelude::*;
 use gloo_storage::SessionStorage;
@@ -14,7 +13,8 @@ use gloo_storage::Storage;
 
 #[component]
 pub fn ProfilePagePanel() -> Element {
-    let dark_mode = *THEME.read() == Theme::Dark;
+    let theme = use_context::<Signal<Theme>>();
+    let dark_mode = theme() == Theme::Dark;
     let mut user_token = use_signal(|| "".to_string());
     let mut user_data = use_signal(|| None::<User>);
     let mut edit_mode = use_signal(|| false);

@@ -6,7 +6,6 @@ use crate::components::toast::manager::ToastType;
 use crate::server::og::controller::store_og;
 use crate::server::og::request::StoreOGRequest;
 use crate::theme::Theme;
-use crate::theme::THEME;
 use chrono::{Duration, Utc};
 use dioxus::prelude::*;
 use gloo_storage::{LocalStorage, Storage};
@@ -37,7 +36,8 @@ struct CachedOGsData {
 
 #[component]
 pub fn CreateOGPanel(user_token: Signal<String>) -> Element {
-    let dark_mode = *THEME.read() == Theme::Dark;
+    let theme = use_context::<Signal<Theme>>();
+    let dark_mode = theme() == Theme::Dark;
 
     let mut title = use_signal(|| "Open SASS".to_string());
     let mut description =

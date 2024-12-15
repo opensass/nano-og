@@ -1,17 +1,16 @@
 use crate::router::Route;
 use crate::theme::Theme;
-use crate::theme::THEME;
 use dioxus::prelude::*;
 
 #[component]
 pub fn Hero() -> Element {
-    let dark_mode = *THEME.read();
+    let dark_mode = use_context::<Signal<Theme>>();
 
     rsx! {
         section {
             class: format!(
                 "relative min-h-screen flex flex-col items-center justify-center px-6 overflow-hidden transition-colors duration-300 {}",
-                if dark_mode == Theme::Dark { "bg-gray-900 text-white" } else { "bg-gray-50 text-gray-900" }
+                if dark_mode() == Theme::Dark { "bg-gray-900 text-white" } else { "bg-gray-50 text-gray-900" }
             ),
             div {
                 class: "absolute inset-0 bg-gradient-to-bl from-indigo-500 via-purple-500 to-transparent opacity-30 pointer-events-none"
@@ -31,7 +30,7 @@ pub fn Hero() -> Element {
                 p {
                     class: format!(
                         "text-lg md:text-2xl leading-relaxed max-w-3xl mx-auto animate-fade-in delay-150 {}",
-                        if dark_mode == Theme::Dark { "text-gray-300" } else { "text-gray-400" }
+                        if dark_mode() == Theme::Dark { "text-gray-300" } else { "text-gray-400" }
                     ),
                     "Unleash the power of Gemini Nano AI to craft visually stunning OG images that make your website stand out. It's fast, intuitive, and cutting-edge."
                 },
@@ -46,7 +45,7 @@ pub fn Hero() -> Element {
                         to: Route::Login {},
                         class: format!(
                             "py-3 px-8 rounded-full shadow-lg focus:outline-none transform hover:scale-105 transition-transform duration-150 font-semibold {}",
-                            if dark_mode == Theme::Dark {
+                            if dark_mode() == Theme::Dark {
                                 "bg-gray-800 text-gray-100 hover:bg-gray-700"
                             } else {
                                 "bg-gray-100 text-gray-800 hover:bg-gray-200"
@@ -71,7 +70,7 @@ pub fn Hero() -> Element {
             div {
                 class: format!(
                     "absolute bottom-0 w-full h-64 bg-gradient-to-t from-gray-900 to-transparent opacity-80 pointer-events-none {}",
-                    if dark_mode == Theme::Dark { "opacity-60" } else { "" }
+                    if dark_mode() == Theme::Dark { "opacity-60" } else { "" }
                 )
             }
         }
