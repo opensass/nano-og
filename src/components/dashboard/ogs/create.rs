@@ -49,6 +49,17 @@ pub fn CreateOGPanel(user_token: Signal<String>) -> Element {
     let twitter_card = use_signal(|| "summary_large_image".to_string());
     let twitter_site = use_signal(|| "@opensassorg".to_string());
 
+    let mut from_color = use_signal(|| String::from("purple-300"));
+    let mut to_color = use_signal(|| String::from("pink-300"));
+    let mut img_drag = use_signal(|| None);
+    let mut img_position = use_signal(|| (0., 0.));
+    let mut author_drag = use_signal(|| None);
+    let mut author_position = use_signal(|| (0., 0.));
+    let mut title_drag = use_signal(|| None);
+    let mut title_position = use_signal(|| (0., 0.));
+    let mut description_drag = use_signal(|| None);
+    let mut description_position = use_signal(|| (0., 0.));
+
     let mut title_valid = use_signal(|| true);
     let mut description_valid = use_signal(|| true);
     let mut site_name_valid = use_signal(|| true);
@@ -57,6 +68,8 @@ pub fn CreateOGPanel(user_token: Signal<String>) -> Element {
     let mut locale_valid = use_signal(|| true);
     let mut twitter_card_valid = use_signal(|| true);
     let mut twitter_site_valid = use_signal(|| true);
+    let mut from_color_valid = use_signal(|| true);
+    let mut to_color_valid = use_signal(|| true);
 
     let mut loading = use_signal(|| false);
     let mut generated_metadata = use_signal(|| None::<Metadata>);
@@ -70,7 +83,13 @@ pub fn CreateOGPanel(user_token: Signal<String>) -> Element {
             document::eval(r#"
                 const element = document.getElementById('preview-section');
                 if (element) {
-                    html2canvas(element).then((canvas) => {
+                    html2canvas(element, {
+                        letterRendering: 1,
+                        logging: true,
+                        allowTaint: true,
+                        useCORS: true,
+                        })
+                    .then((canvas) => {
                         const base64Image = canvas.toDataURL('image/png');
                         const imageData = base64Image.replace(/^data:image\/png;base64,/, '');
                         const payload = `req[image_url]=${encodeURIComponent(imageData)}`;
@@ -266,12 +285,18 @@ pub fn CreateOGPanel(user_token: Signal<String>) -> Element {
             document::eval(r#"
                 const element = document.getElementById('preview-section');
                 if (element) {
-                    html2canvas(element).then((canvas) => {
-                        const link = document.createElement('a');
-                        link.download = 'og-preview.png';
-                        link.href = canvas.toDataURL('image/png');
-                        link.click();
-                    });
+                    html2canvas(element, {
+                        letterRendering: 1,
+                        logging: true,
+                        allowTaint: true,
+                        useCORS: true,
+                        }).then((canvas) => {
+                            const link = document.createElement('a');
+                            link.download = 'og-preview.png';
+                            link.href = canvas.toDataURL('image/png');
+                            link.click();
+                        }
+                    );
                 }
             "#);
         }
@@ -367,6 +392,32 @@ pub fn CreateOGPanel(user_token: Signal<String>) -> Element {
                         InputField { label: "Site Name", value: site_name, is_valid: site_name_valid, validate: validate_field, required: false },
                         InputField { label: "Brand Image", value: image_url, is_valid: image_url_valid, validate: validate_field, required: false },
                         InputField { label: "Author", value: author, is_valid: author_valid, validate: validate_field, required: false },
+                        div {
+                            class: "mb-4 w-full",
+                            label {
+                                class: format!("text-sm font-medium {}", if dark_mode { "text-gray-300" } else { "text-gray-700" }),
+                                "Background Color"
+                            }
+                            div {
+                                class: format!(
+                                    "border rounded flex flex-col md:flex-row gap-4 mt-1 w-full p-2 {}",
+                                    if dark_mode { "bg-gray-900" } else { "" }),
+                                InputField {
+                                    label: "From Color",
+                                    value: from_color,
+                                    is_valid: from_color_valid,
+                                    validate: validate_field,
+                                    required: true
+                                },
+                                InputField {
+                                    label: "To Color",
+                                    value: to_color,
+                                    is_valid: to_color_valid,
+                                    validate: validate_field,
+                                    required: true
+                                }
+                            },
+                        },
                         InputField { label: "Locale", value: locale, is_valid: locale_valid, validate: validate_field, required: false },
                         InputField { label: "Twitter Card Type", value: twitter_card, is_valid: twitter_card_valid, validate: validate_field, required: false },
                         InputField { label: "Twitter Site", value: twitter_site, is_valid: twitter_site_valid, validate: validate_field, required: false },
@@ -404,23 +455,128 @@ pub fn CreateOGPanel(user_token: Signal<String>) -> Element {
 
                     div {
                         id: "preview-section",
-                        class: "relative bg-gradient-to-r from-purple-300 to-pink-300 p-4 rounded-lg shadow-md w-full h-full aspect-w-16 aspect-h-9",
-                        h1 {
-                            class: "absolute top-4 left-4 text-4xl font-bold text-gray-900",
-                            "{title()}"
+                        class: format!(
+                            "relative bg-gradient-to-r from-{} to-{} p-4 rounded-lg shadow-md w-full h-full aspect-w-16 aspect-h-9",
+                            from_color(),
+                            to_color()
+                        ),
+                        div {
+                            class: "absolute w-full",
+                            draggable: true,
+                            onmousedown: move |event| {
+                                let (x, y) = (event.coordinates().client().x, event.coordinates().client().y);
+                                title_drag.set(Some((x, y)));
+                            },
+                            onmousemove: move |event| {
+                                if let Some((start_x, start_y)) = title_drag() {
+                                    let delta_x = event.coordinates().client().x - start_x;
+                                    let delta_y = event.coordinates().client().y - start_y;
+
+                                    title_position.set((delta_x, delta_y));
+                                }
+                            },
+                            onmouseup: move |_| {
+                                title_drag.set(None);
+                            },
+                            style: if title_position().1 != 0. || title_position().1 != 0. {
+                                    format!(
+                                        "top: {}px; left: {}px;",
+                                        title_position().1,
+                                        title_position().0
+                                    )
+                                } else {
+                                    "".to_string()
+                                },
+                            h1 {
+                                class: "absolute top-4 left-4 text-4xl font-bold text-gray-900",
+                                "{title()}"
+                            },
                         },
                         div {
-                            class: "absolute top-1/3 left-4 text-xl text-gray-900",
-                            "{description()}"
-                        },
+                            class: "absolute w-full top-1/3 left-4 text-xl text-gray-900",
+                            draggable: true,
+                            onmousedown: move |event| {
+                                let (x, y) = (event.coordinates().client().x, event.coordinates().client().y);
+                                description_drag.set(Some((x, y)));
+                            },
+                            onmousemove: move |event| {
+                                if let Some((start_x, start_y)) = description_drag() {
+                                    let delta_x = event.coordinates().client().x - start_x;
+                                    let delta_y = event.coordinates().client().y - start_y;
+
+                                    description_position.set((delta_x, delta_y));
+                                }
+                            },
+                            onmouseup: move |_| {
+                                description_drag.set(None);
+                            },
+                            style: if description_position().1 != 0. || description_position().1 != 0. {
+                                    format!(
+                                        "top: {}px; left: {}px;",
+                                        description_position().1,
+                                        description_position().0
+                                    )
+                                } else {
+                                    "".to_string()
+                                },
+                            div {
+                                class: "absolute top-1/3 left-4 text-xl text-gray-900",
+                                "{description()}"
+                            },
+                        }
                         h3 {
                             class: "absolute bottom-4 left-4 text-sm text-gray-900 italic",
+                            draggable: true,
+                            onmousedown: move |event| {
+                                let (x, y) = (event.coordinates().client().x, event.coordinates().client().y);
+                                author_drag.set(Some((x, y)));
+                            },
+                            onmousemove: move |event| {
+                                if let Some((start_x, start_y)) = author_drag() {
+                                    let delta_x = event.coordinates().client().x - start_x;
+                                    let delta_y = event.coordinates().client().y - start_y;
+
+                                    author_position.set((delta_x, delta_y));
+                                }
+                            },
+                            onmouseup: move |_| {
+                                author_drag.set(None);
+                            },
+                            style: if author_position().1 != 0. || author_position().1 != 0. {
+                                    format!(
+                                        "top: {}px; left: {}px;",
+                                        author_position().1,
+                                        author_position().0
+                                    )
+                                } else {
+                                    "".to_string()
+                                },
                             "Author: {author()} | Site: {site_name()}"
                         },
-                        img {
-                            class: "absolute top-0 right-0 w-24 h-24 shadow-lg m-4",
-                            src: "{image_url()}",
-                            alt: "Brand Logo"
+                        div {
+                            class: "absolute w-24 h-24 m-4",
+                            draggable: true,
+                            onmousedown: move |event| {
+                                let (x, y) = (event.coordinates().client().x, event.coordinates().client().y);
+                                img_drag.set(Some((x, y)));
+                            },
+                            onmousemove: move |event| {
+                                if let Some((start_x, start_y)) = img_drag() {
+                                    let delta_x = start_x - event.coordinates().client().x;
+                                    let delta_y = event.coordinates().client().y - start_y;
+
+                                    img_position.set((delta_x, delta_y));
+                                }
+                            },
+                            onmouseup: move |_| {
+                                img_drag.set(None);
+                            },
+                            style: format!(
+                                "background-image: url('{}'); background-size: cover; background-position: center; background-repeat: no-repeat; top: {}px; right: {}px;",
+                                image_url(),
+                                img_position().1,
+                                img_position().0
+                            ),
                         }
                     },
                     button {
@@ -475,11 +631,22 @@ fn generate_meta_tags(metadata: Metadata) -> String {
 
 async fn generate_ai_title() -> Result<String, String> {
     let mut client = NanoAI::new();
+    let system_prompt = format!(
+        "
+        **System Prompt (SP):** You are an expert in content generation for web metadata and SEO optimization.
+
+        **Prompt (P):** Generate a unique, concise, and creative image title for an OG (Open Graph) metadata tag.
+        The title should align with modern web standards, capture user attention, and concisely describe the associated website content.
+
+        **Expected Format (EF):**
+        - A short, unique title (maximum 20 characters) that is impactful and descriptive.
+
+        **Roleplay (RP):** Act as an experienced SEO copywriter crafting metadata titles for websites.
+        "
+    );
+
     match client.create_session(None).await {
-        Ok(_) => match client
-            .send_prompt("Generate a unique short image title text for an OG metadata tag")
-            .await
-        {
+        Ok(_) => match client.send_prompt(&system_prompt).await {
             Ok(response) => Ok(response),
             Err(err) => Err(err.to_string()),
         },
@@ -489,11 +656,22 @@ async fn generate_ai_title() -> Result<String, String> {
 
 async fn generate_ai_description() -> Result<String, String> {
     let mut client = NanoAI::new();
+    let system_prompt = format!(
+        "
+        **System Prompt (SP):** You are an expert in content generation for web metadata and SEO optimization.
+
+        **Prompt (P):** Generate a unique and concise description for an OG (Open Graph) metadata tag.
+        The description should provide a brief, engaging summary of the associated content, optimized for search engines and user engagement.
+
+        **Expected Format (EF):**
+        - A short sentence (maximum 60 characters) that is compelling, informative, and aligned with modern web best practices.
+
+        **Roleplay (RP):** Act as an experienced SEO copywriter crafting metadata descriptions for websites.
+        "
+    );
+
     match client.create_session(None).await {
-        Ok(_) => match client
-            .send_prompt("Generate a unique short description text for an OG metadata tag")
-            .await
-        {
+        Ok(_) => match client.send_prompt(&system_prompt).await {
             Ok(response) => Ok(response),
             Err(err) => Err(err.to_string()),
         },

@@ -20,6 +20,7 @@ pub fn InputField(
 
     rsx! {
         div {
+            class: "flex-grow w-full",
             label {
                 class: format!("block text-sm font-medium {}", if dark_mode { "text-gray-300" } else { "text-gray-700" }),
                 "{label}"
