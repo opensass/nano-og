@@ -7,7 +7,7 @@ RUN apt-get update && apt-get install -y \
     curl \
     git
 RUN cargo install cargo-chef
-RUN cargo install dioxus-cli@0.5.6
+RUN cargo install dioxus-cli
 WORKDIR /app
 
 # copy in source files, cd into target create and prepare recipe
@@ -26,11 +26,10 @@ FROM debian:bookworm-slim AS runtime
 RUN apt-get update && apt install -y openssl
 RUN apt-get install ca-certificates
 WORKDIR /app
-COPY --from=builder /app/dist /user/local/bin
-COPY --from=builder /app/target/release/nano-og /user/local/bin/dist
+COPY --from=builder /app/target/dx/nano-og/release/web /user/local/bin
 EXPOSE 80
 EXPOSE 8080
 EXPOSE 443
 
-ENTRYPOINT ["/user/local/bin/dist/nano-og"]
+ENTRYPOINT ["/user/local/bin/web/server"]
 

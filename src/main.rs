@@ -45,10 +45,7 @@ fn main() {
 
                 let app = Router::new()
                     .layer(cors)
-                    .serve_dioxus_application(ServeConfig::builder().build(), || {
-                        VirtualDom::new(App)
-                    })
-                    .await;
+                    .serve_dioxus_application(ServeConfig::new().unwrap(), App);
 
                 let addr = std::net::SocketAddr::from(([0, 0, 0, 0], 3000));
                 let listener = tokio::net::TcpListener::bind(&addr).await.unwrap();

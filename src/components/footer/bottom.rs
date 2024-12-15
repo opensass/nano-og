@@ -13,6 +13,7 @@ pub fn Bottom() -> Element {
                     "© 2024. Designed by ",
                     a {
                         href: "https://github.com/opensass",
+                        target: "_blank",
                         class: "text-white hover:text-gray-400 transition-colors",
                         "OpenSASS"
                     }

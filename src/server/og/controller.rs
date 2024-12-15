@@ -102,7 +102,7 @@ pub async fn store_og(req: StoreOGRequest) -> Result<SuccessResponse<OGResponse>
     }
 }
 
-#[server]
+#[server(endpoint = "upload_og")]
 pub async fn update_og(
     req: UpdateOGContentRequest,
 ) -> Result<SuccessResponse<String>, ServerFnError> {

@@ -38,7 +38,7 @@
 .editable-content {
 	padding: 1rem;
 	border: 1px solid #ccc;
-	min-height: 300px;
+	min-height: 1000px;
 }
 
 .modal-overlay {

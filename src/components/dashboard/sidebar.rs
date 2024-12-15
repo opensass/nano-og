@@ -1,11 +1,8 @@
 use crate::components::common::logo::Logo;
+use crate::router::Route;
 use crate::theme::Theme;
 use crate::theme::THEME;
 use dioxus::prelude::*;
-use dioxus_free_icons::icons::fa_regular_icons::{
-    FaAddressBook, FaFileLines, FaFolderOpen, FaMessage, FaPenToSquare,
-};
-use dioxus_free_icons::Icon;
 
 #[derive(PartialEq, Clone)]
 pub enum Tab {
@@ -43,7 +40,7 @@ pub fn Sidebar(active_tab: Signal<Tab>, navigate: bool) -> Element {
         div { class: format!("fixed bottom-0 w-full md:static md:w-64 p-4 space-y-4 md:min-h-screen flex md:flex-col items-center md:items-start {}",
                               if dark_mode { "bg-gray-900" } else { "bg-gray-200" }),
             Link {
-                to: "/dashboard",
+                to: Route::Dashboard {},
                 class: "hidden md:inline",
                 Logo {}
             }
@@ -55,10 +52,10 @@ pub fn Sidebar(active_tab: Signal<Tab>, navigate: bool) -> Element {
                     }
                     active_tab.set(Tab::OGs);
                 },
-                Icon {
-                    width: 30,
-                    height: 30,
-                    icon: FaFolderOpen,
+                i {
+                    width: 100,
+                    height: 100,
+                    class: "fa-solid fa-folder-open",
                 },
                 span { class: "hidden md:inline", "OGs" }
             }
@@ -70,10 +67,10 @@ pub fn Sidebar(active_tab: Signal<Tab>, navigate: bool) -> Element {
                     }
                     active_tab.set(Tab::Chat);
                 },
-                Icon {
-                    width: 30,
-                    height: 30,
-                    icon: FaMessage,
+                i {
+                    width: 100,
+                    height: 100,
+                    class: "fa-solid fa-message",
                 },
                 span { class: "hidden md:inline", "Chat" }
             }
@@ -85,19 +82,19 @@ pub fn Sidebar(active_tab: Signal<Tab>, navigate: bool) -> Element {
                     }
                     active_tab.set(Tab::CreateOG);
                 },
-                Icon {
-                    width: 30,
-                    height: 30,
-                    icon: FaFileLines,
+                i {
+                    width: 100,
+                    height: 100,
+                    class: "fa-solid fa-file-lines",
                 },
                 span { class: "hidden md:inline", "Generate" }
             }
             div { class: tab_style(Tab::ViewOG),
                 onclick: move |_| active_tab.set(Tab::ViewOG),
-                Icon {
-                    width: 30,
-                    height: 30,
-                    icon: FaAddressBook,
+                i {
+                    width: 100,
+                    height: 100,
+                    class: "fa-solid fa-address-book",
                 },
                 span { class: "hidden md:inline", "View OG" }
             }
@@ -108,10 +105,10 @@ pub fn Sidebar(active_tab: Signal<Tab>, navigate: bool) -> Element {
                     }
                     active_tab.set(Tab::EditProfile);
                 },
-                Icon {
-                    width: 30,
-                    height: 30,
-                    icon: FaPenToSquare,
+                i {
+                    width: 100,
+                    height: 100,
+                    class: "fa-regular fa-pen-to-square",
                 },
                 span { class: "hidden md:inline", "Profile" }
             }

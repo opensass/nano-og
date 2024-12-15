@@ -39,7 +39,8 @@ style = [
 
 # Javascript code file
 script = [
-   "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"
+   "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js",
+   "https://kit.fontawesome.com/62e08d355c.js"
 ]
 
 [web.resource.dev]
