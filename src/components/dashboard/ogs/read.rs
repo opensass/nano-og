@@ -31,7 +31,7 @@ pub fn ViewOGPanel(og_id: String, user_token: Signal<String>) -> Element {
     });
     fn download_preview_as_image() {
         client! {
-            eval(r#"
+            document::eval(r#"
                 const element = document.getElementById('preview-section');
                 if (element) {
                     html2canvas(element).then((canvas) => {

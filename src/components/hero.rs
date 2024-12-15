@@ -1,3 +1,4 @@
+use crate::router::Route;
 use crate::theme::Theme;
 use crate::theme::THEME;
 use dioxus::prelude::*;
@@ -42,7 +43,7 @@ pub fn Hero() -> Element {
                         "Explore Features"
                     },
                     Link {
-                        to: "/login",
+                        to: Route::Login {},
                         class: format!(
                             "py-3 px-8 rounded-full shadow-lg focus:outline-none transform hover:scale-105 transition-transform duration-150 font-semibold {}",
                             if dark_mode == Theme::Dark {

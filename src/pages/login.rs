@@ -9,8 +9,6 @@ use crate::theme::Theme;
 use crate::theme::THEME;
 use chrono::Duration;
 use dioxus::prelude::*;
-use dioxus_free_icons::icons::fa_regular_icons::{FaEye, FaEyeSlash};
-use dioxus_free_icons::Icon;
 use gloo_storage::SessionStorage;
 use gloo_storage::Storage;
 use regex::Regex;
@@ -239,9 +237,9 @@ pub fn Login() -> Element {
                         onclick: move |_| show_password.set(!show_password()),
                         class: "absolute inset-y-0 right-0 pr-3 text-gray-500 hover:text-gray-700",
                         if show_password() {
-                            Icon { icon: FaEye, width: 20, height: 20 }
+                            i { class: "fa-solid fa-eye", width: 20, height: 20 }
                         } else {
-                            Icon { icon: FaEyeSlash, width: 20, height: 20 }
+                            i { class: "fa-solid fa-eye-slash", width: 20, height: 20 }
                         }
                     }
                     if !password_valid() {

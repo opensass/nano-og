@@ -7,16 +7,14 @@ use crate::components::testimonial::rating::StarRating;
 use crate::theme::Theme;
 use crate::theme::THEME;
 use dioxus::prelude::*;
-use dioxus_free_icons::icons::fa_regular_icons::FaStar;
-use dioxus_free_icons::Icon;
 
 #[derive(Props, Clone, PartialEq)]
 pub struct TestimonialData {
     quote: &'static str,
     author_name: &'static str,
     author_title: &'static str,
-    author_image: &'static str,
-    company_logo: &'static str,
+    author_image: Asset,
+    company_logo: Asset,
     star_images: Vec<Element>,
 }
 
@@ -28,36 +26,36 @@ pub fn Testimonial() -> Element {
             quote: "I asked Nano OG to generate an OG image for my website... and somehow, I ended up with a neon spaceship and a llama in sunglasses. 10/10 would og again!",
             author_name: "Jeff Bezos",
             author_title: "Founder, Amazon",
-            author_image: "https://substack-post-media.s3.amazonaws.com/public/images/e218d24d-c799-4b18-825d-32be27208a27_752x349.jpeg",
-            company_logo: "https://banner2.cleanpng.com/20180825/xoa/kisspng-amazon-com-logo-brand-amazon-prime-video-product-amazon-offers-boat-bassheads-225-in-ear-super-ex-1713948584668.webp",
-            star_images: vec![rsx! {Icon {
-                width: 30,
-                height: 30,
-                icon: FaStar,
+            author_image: asset!("/assets/jeff.webp"),
+            company_logo: asset!("/assets/amazon.webp"),
+            star_images: vec![rsx! {i {
+                width: 100,
+                height: 100,
+                class: "fa-solid fa-star",
             }}; 5],
         },
         TestimonialData {
             quote: "I told Nano OG I needed a website header. It gave me a flying cat riding a skateboard. Not what I expected, but I can't look away. Genius work!",
             author_name: "Mark Zuckerberg",
             author_title: "CEO, Meta",
-            author_image: "https://euromedia24.com/storage/images/posts/1726912294.webp",
-            company_logo: "https://logowik.com/content/uploads/images/facebook-meta1731.logowik.com.webp",
-            star_images: vec![rsx! {Icon {
-                width: 30,
-                height: 30,
-                icon: FaStar,
+            author_image: asset!("/assets/zuck.webp"),
+            company_logo: asset!("/assets/meta.webp"),
+            star_images: vec![rsx! {i {
+                width: 100,
+                height: 100,
+                class: "fa-solid fa-star",
             }}; 5],
         },
         TestimonialData {
             quote: "I wanted an OG image for my new e-commerce site. Nano OG delivered... but now my website is asking me to go to the moon? I'm intrigued, but slightly concerned.",
             author_name: "Elon Musk",
             author_title: "CEO, SpaceX",
-            author_image: "./elon.webp",
-            company_logo: "./spacex.webp",
-            star_images: vec![rsx! {Icon {
-                width: 30,
-                height: 30,
-                icon: FaStar,
+            author_image: asset!("/assets/elon.webp"),
+            company_logo: asset!("/assets/spacex.webp"),
+            star_images: vec![rsx! {i {
+                width: 100,
+                height: 100,
+                class: "fa-solid fa-star",
             }}; 5],
         },
     ];
@@ -67,20 +65,18 @@ pub fn Testimonial() -> Element {
 
     client! {
         let vec_len = testimonials.len();
-        let mut eval = use_hook(|| {
-            eval(
-                r#"
-                setInterval(() => {
-                    dioxus.send("");
-                }, 5000)
-                "#,
-            )
-        });
+        let mut eval = document::eval(
+            r#"
+            setInterval(() => {
+                dioxus.send("");
+            }, 5000)
+            "#,
+        );
 
         use_hook(|| {
             spawn(async move {
                 loop {
-                    let _ = eval.recv().await;
+                    let _ = eval.recv::<String>().await;
                     current_index.set((current_index() + 1) % vec_len);
                 }
             })

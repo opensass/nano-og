@@ -8,7 +8,6 @@ use crate::router::Route;
 use crate::theme::Theme;
 use crate::theme::ThemeToggle;
 use crate::theme::THEME;
-
 use dioxus::prelude::*;
 
 #[component]
@@ -24,7 +23,7 @@ fn NavBar(show_items: bool) -> Element {
         nav {
             class: "fixed top-0 w-full z-50 flex items-center justify-between px-8 py-4 transition-colors duration-300",
             Link {
-                to: "/",
+                to: Route::Home {},
                 Logo {}
             }
 

@@ -4,8 +4,6 @@ use crate::components::spinner::SpinnerSize;
 use crate::components::toast::manager::ToastManager;
 use crate::components::toast::manager::ToastType;
 use crate::server::og::controller::store_og;
-use crate::server::og::controller::upload_og;
-use crate::server::og::controller::UploadOGRequest;
 use crate::server::og::request::StoreOGRequest;
 use crate::theme::Theme;
 use crate::theme::THEME;
@@ -69,7 +67,7 @@ pub fn CreateOGPanel(user_token: Signal<String>) -> Element {
     // 9000 IQ hack to send the html tags as an image to an axum endpoint
     fn save_preview_as_image() {
         client! {
-            eval(r#"
+            document::eval(r#"
                 const element = document.getElementById('preview-section');
                 if (element) {
                     html2canvas(element).then((canvas) => {
@@ -77,8 +75,7 @@ pub fn CreateOGPanel(user_token: Signal<String>) -> Element {
                         const imageData = base64Image.replace(/^data:image\/png;base64,/, '');
                         const payload = `req[image_url]=${encodeURIComponent(imageData)}`;
 
-                        // TODO: file an issue to disable api randomization
-                        fetch('/api/upload_og6094941039135047799', {
+                        fetch('/api/upload_og', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/x-www-form-urlencoded'
@@ -102,17 +99,6 @@ pub fn CreateOGPanel(user_token: Signal<String>) -> Element {
                 }
             "#);
         }
-
-        // Dummy logic to trigger the server function to get the api url path in the network tab to upload the image
-        // let request = UploadOGRequest {
-        //     image_url: "-1".to_string(),
-        // };
-
-        // spawn(async move {
-        //     match upload_og(request).await {
-        //         Ok(_) | Err(_) => {},
-        //     }
-        // });
     }
 
     let handle_submit = move |e: Event<FormData>| {
@@ -277,7 +263,7 @@ pub fn CreateOGPanel(user_token: Signal<String>) -> Element {
     };
     fn download_preview_as_image() {
         client! {
-            eval(r#"
+            document::eval(r#"
                 const element = document.getElementById('preview-section');
                 if (element) {
                     html2canvas(element).then((canvas) => {

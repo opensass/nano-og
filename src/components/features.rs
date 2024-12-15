@@ -5,9 +5,6 @@ use crate::components::features::grid::Grid;
 use crate::theme::Theme;
 use crate::theme::THEME;
 use dioxus::prelude::*;
-use dioxus_free_icons::icons::fa_regular_icons::{FaClock, FaClone};
-use dioxus_free_icons::icons::fa_solid_icons::{FaBolt, FaCode, FaPalette};
-use dioxus_free_icons::Icon;
 
 #[derive(Props, Clone, PartialEq)]
 struct Feature {
@@ -22,32 +19,32 @@ pub fn Features() -> Element {
 
     let features = vec![
         Feature {
-            icon: rsx! { Icon { width: 30, height: 30, icon: FaCode, class: "text-indigo-500 group-hover:animate-bounce" } },
+            icon: rsx! { i { width: 30, height: 30, class: "fa-solid fa-brain text-indigo-500 group-hover:animate-bounce" } },
             title: "AI-Powered Generation",
             description: "Generate dynamic OG images in seconds, optimized by the power of Nano AI's cutting-edge algorithms.",
         },
         Feature {
-            icon: rsx! { Icon { width: 30, height: 30, icon: FaPalette, class: "text-pink-500 group-hover:animate-spin" } },
+            icon: rsx! { i { width: 30, height: 30, class: "fa-solid fa-palette text-pink-500 group-hover:animate-spin" } },
             title: "Customizable Designs",
             description: "Tailor your images to match your brand’s style with our fully customizable design tools.",
         },
         Feature {
-            icon: rsx! { Icon { width: 30, height: 30, icon: FaClock, class: "text-yellow-500 group-hover:animate-ping" } },
+            icon: rsx! { i { width: 30, height: 30, class: "text-yellow-500 group-hover:animate-ping fa-regular fa-clock" } },
             title: "Real-Time Previews",
             description: "See real-time previews of your images as you design, ensuring every detail is perfect.",
         },
         Feature {
-            icon: rsx! { Icon { width: 30, height: 30, icon: FaBolt, class: "text-blue-500 group-hover:animate-pulse" } },
+            icon: rsx! { i { width: 30, height: 30, class: "fa-solid fa-bolt text-blue-500 group-hover:animate-pulse" } },
             title: "Lightning-Fast Output",
             description: "Experience unparalleled speed with our optimized Rust-powered backend.",
         },
         Feature {
-            icon: rsx! { Icon { width: 30, height: 30, icon: FaClone, class: "text-green-500 group-hover:animate-bounce" } },
+            icon: rsx! { i { width: 30, height: 30, class: "fa-solid fa-code text-green-500 group-hover:animate-bounce" } },
             title: "Developer-Friendly API",
             description: "Seamlessly integrate Nano AI into your workflow with our robust developer tools.",
         },
         Feature {
-            icon: rsx! { Icon { width: 30, height: 30, icon: FaClone, class: "text-purple-500 group-hover:animate-ping" } },
+            icon: rsx! { i { width: 30, height: 30, class: "fa-solid fa-shield-halved text-purple-500 group-hover:animate-ping" } },
             title: "Secure and Reliable",
             description: "Your data and designs are safe with our secure, privacy-focused platform.",
         },

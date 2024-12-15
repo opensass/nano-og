@@ -10,7 +10,7 @@ use crate::pages::og::ViewOG;
 use crate::pages::signup::Register;
 use dioxus::prelude::*;
 
-#[derive(Clone, Routable, Debug, PartialEq, serde::Serialize, serde::Deserialize)]
+#[derive(Clone, Routable, PartialEq, serde::Serialize, serde::Deserialize)]
 pub enum Route {
     #[layout(HomeNavBar)]
     #[route("/")]
