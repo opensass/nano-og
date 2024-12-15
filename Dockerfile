@@ -19,7 +19,6 @@ FROM chef as builder
 COPY --from=planner /app/recipe.json recipe.json
 RUN cargo chef cook --release --recipe-path recipe.json
 RUN dx build --release
-RUN ls dist -lh
 COPY . .
 
 FROM debian:bookworm-slim AS runtime
@@ -31,5 +30,5 @@ EXPOSE 80
 EXPOSE 8080
 EXPOSE 443
 
-ENTRYPOINT ["/user/local/bin/web/server"]
+ENTRYPOINT ["/user/local/bin/server"]
 
