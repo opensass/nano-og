@@ -117,7 +117,7 @@ Once the environment is set up, you're ready to build and run Nano OG.
 ### Build the Client
 
 ```sh
-dx serve --port 3000
+dx serve
 ```
 
 Navigate to [http://localhost:3000](http://localhost:3000) to access Nano OG.
