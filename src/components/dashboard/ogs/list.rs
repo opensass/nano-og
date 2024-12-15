@@ -5,7 +5,6 @@ use crate::server::og::controller::get_ogs_for_user;
 use crate::server::og::model::OG;
 use crate::server::og::request::GetOGsForUserRequest;
 use crate::theme::Theme;
-use crate::theme::THEME;
 use chrono::Utc;
 use dioxus::prelude::*;
 use gloo_storage::{LocalStorage, Storage};
@@ -22,7 +21,8 @@ pub const CACHE_TIMEOUT: i64 = 2 * 60 * 60;
 
 #[component]
 pub fn OGsPanel(user_token: Signal<String>) -> Element {
-    let dark_mode = *THEME.read() == Theme::Dark;
+    let theme = use_context::<Signal<Theme>>();
+    let dark_mode = theme() == Theme::Dark;
     let mut ogs = use_signal(Vec::new);
     let mut displayed_ogs = use_signal(Vec::new);
     let mut loading = use_signal(|| true);

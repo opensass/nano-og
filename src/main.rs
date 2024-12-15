@@ -4,6 +4,7 @@ use dioxus::prelude::*;
 use dioxus_logger::tracing;
 use nano_og::components::toast::provider::ToastProvider;
 use nano_og::router::Route;
+use nano_og::theme::ThemeProvider;
 
 fn main() {
     #[cfg(feature = "web")]
@@ -59,8 +60,10 @@ fn main() {
 
 fn App() -> Element {
     rsx! {
+        ThemeProvider {
             ToastProvider {
                 Router::<Route> {}
+            }
         }
     }
 }

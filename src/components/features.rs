@@ -3,7 +3,6 @@ pub(crate) mod item;
 
 use crate::components::features::grid::Grid;
 use crate::theme::Theme;
-use crate::theme::THEME;
 use dioxus::prelude::*;
 
 #[derive(Props, Clone, PartialEq)]
@@ -15,7 +14,7 @@ struct Feature {
 
 #[component]
 pub fn Features() -> Element {
-    let dark_mode = *THEME.read();
+    let dark_mode = use_context::<Signal<Theme>>();
 
     let features = vec![
         Feature {
@@ -55,7 +54,7 @@ pub fn Features() -> Element {
             id: "features",
             class: format!(
                 "relative min-h-screen flex flex-col items-center justify-center px-6 overflow-hidden transition-colors duration-300 {}",
-                if dark_mode == Theme::Dark { "bg-gray-900 text-white" } else { "bg-gray-50 text-gray-900" }
+                if dark_mode() == Theme::Dark { "bg-gray-900 text-white" } else { "bg-gray-50 text-gray-900" }
             ),
 
             div {
@@ -74,14 +73,14 @@ pub fn Features() -> Element {
                     h2 {
                         class: format!(
                             "text-3xl md:text-5xl font-extrabold tracking-tight {}",
-                            if dark_mode == Theme::Dark { "text-white" } else { "text-gray-900" }
+                            if dark_mode() == Theme::Dark { "text-white" } else { "text-gray-900" }
                         ),
                         "Why Choose OG Nano?"
                     }
                     p {
                         class: format!(
                             "text-lg md:text-xl {}",
-                            if dark_mode == Theme::Dark { "text-gray-300" } else { "text-gray-700" }
+                            if dark_mode() == Theme::Dark { "text-gray-300" } else { "text-gray-700" }
                         ),
                         "Leverage the power of AI to craft stunning OG images for your websites in record time."
                     }

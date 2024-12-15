@@ -4,12 +4,12 @@ use crate::server::og::controller::get_og_for_user;
 use crate::server::og::model::OG;
 use crate::server::og::request::GetOGForUserRequest;
 use crate::theme::Theme;
-use crate::theme::THEME;
 use dioxus::prelude::*;
 
 #[component]
 pub fn ViewOGPanel(og_id: String, user_token: Signal<String>) -> Element {
-    let dark_mode = *THEME.read() == Theme::Dark;
+    let theme = use_context::<Signal<Theme>>();
+    let dark_mode = theme() == Theme::Dark;
     let mut selected_og = use_signal(|| None::<OG>);
     let mut loading = use_signal(|| true);
 

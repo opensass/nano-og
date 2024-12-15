@@ -5,7 +5,6 @@ pub(crate) mod rating;
 use crate::components::testimonial::author::AuthorInfo;
 use crate::components::testimonial::rating::StarRating;
 use crate::theme::Theme;
-use crate::theme::THEME;
 use dioxus::prelude::*;
 
 #[derive(Props, Clone, PartialEq)]
@@ -29,8 +28,8 @@ pub fn Testimonial() -> Element {
             author_image: asset!("/assets/jeff.webp"),
             company_logo: asset!("/assets/amazon.webp"),
             star_images: vec![rsx! {i {
-                width: 100,
-                height: 100,
+                width: 30,
+                height: 30,
                 class: "fa-solid fa-star",
             }}; 5],
         },
@@ -41,8 +40,8 @@ pub fn Testimonial() -> Element {
             author_image: asset!("/assets/zuck.webp"),
             company_logo: asset!("/assets/meta.webp"),
             star_images: vec![rsx! {i {
-                width: 100,
-                height: 100,
+                width: 30,
+                height: 30,
                 class: "fa-solid fa-star",
             }}; 5],
         },
@@ -53,14 +52,14 @@ pub fn Testimonial() -> Element {
             author_image: asset!("/assets/elon.webp"),
             company_logo: asset!("/assets/spacex.webp"),
             star_images: vec![rsx! {i {
-                width: 100,
-                height: 100,
+                width: 30,
+                height: 30,
                 class: "fa-solid fa-star",
             }}; 5],
         },
     ];
 
-    let dark_mode = *THEME.read();
+    let dark_mode = use_context::<Signal<Theme>>();
     let mut current_index = use_signal(|| 0);
 
     client! {
@@ -87,14 +86,14 @@ pub fn Testimonial() -> Element {
         section {
             id: "testimonial",
             class: format!("flex flex-col items-center justify-center min-h-screen p-8 {}",
-            if dark_mode == Theme::Dark { "bg-gray-900 text-white" } else { "bg-white text-black" }),
+            if dark_mode() == Theme::Dark { "bg-gray-900 text-white" } else { "bg-white text-black" }),
 
             div { class: "flex flex-col items-center mb-8",
                 h2 { class: "text-4xl font-bold text-center",
                     "What People Are Saying about Nano OG"
                 }
 
-                p { class: format!("mt-2 text-lg {}", if dark_mode == Theme::Dark { "text-gray-300" } else { "text-gray-700" }),
+                p { class: format!("mt-2 text-lg {}", if dark_mode() == Theme::Dark { "text-gray-300" } else { "text-gray-700" }),
                     "Nano OG: Where AI takes your website (and your imagination) on a wild ride."
                 }
             }
@@ -104,11 +103,11 @@ pub fn Testimonial() -> Element {
                     div { class: format!("transition-transform duration-500 transform {}, hover:scale-105 hover:shadow-xl",
                         if current_index() == i { "opacity-100 scale-100" } else { "opacity-50 scale-75 blur-sm" }),
                         div { class: format!("{} p-8 rounded-xl shadow-2xl text-center max-w-sm border",
-                            if dark_mode == Theme::Dark { "border-gray-700 bg-gray-800" } else { "bg-white border-gray-300" }),
+                            if dark_mode() == Theme::Dark { "border-gray-700 bg-gray-800" } else { "bg-white border-gray-300" }),
                             StarRating { star_images: testimonial.star_images.clone() }
                             blockquote {
                                 class: format!("text-lg font-semibold italic {}",
-                                    if dark_mode == Theme::Dark { "text-gray-400" } else { "text-gray-600" }
+                                    if dark_mode() == Theme::Dark { "text-gray-400" } else { "text-gray-600" }
                                 ),
                                 "{testimonial.quote}"
                             }

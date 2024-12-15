@@ -7,7 +7,6 @@ use crate::router::Route;
 use crate::server::auth::controller::{about_me, register_user};
 use crate::server::auth::response::RegisterUserSchema;
 use crate::theme::Theme;
-use crate::theme::THEME;
 use chrono::Duration;
 use dioxus::prelude::*;
 use gloo_storage::SessionStorage;
@@ -17,7 +16,7 @@ use regex::Regex;
 #[component]
 pub fn Register() -> Element {
     let navigator = use_navigator();
-    let dark_mode = *THEME.read();
+    let dark_mode = use_context::<Signal<Theme>>();
 
     let mut name = use_signal(|| "".to_string());
     let mut email = use_signal(|| "".to_string());
@@ -131,11 +130,11 @@ pub fn Register() -> Element {
     rsx! {
         div {
             class: format!("min-h-screen flex items-center justify-center {}",
-                if dark_mode == Theme::Dark { "bg-blue-500 text-white" } else { "bg-blue-900 text-gray-900" }
+                if dark_mode() == Theme::Dark { "bg-blue-500 text-white" } else { "bg-blue-900 text-gray-900" }
             ),
             style: "background-image: linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px), linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px); background-size: 40px 40px;",
             form {
-                style: if dark_mode == Theme::Dark { "background-color: #1f2937; color: white;" } else { "background-color: white; color: black;" },
+                style: if dark_mode() == Theme::Dark { "background-color: #1f2937; color: white;" } else { "background-color: white; color: black;" },
                 class: "w-full max-w-md flex flex-col items-center p-6 bg-white shadow-lg rounded-lg transform transition-all duration-300 hover:shadow-2xl",
                 onsubmit: handle_register,
                 Link {
@@ -169,7 +168,7 @@ pub fn Register() -> Element {
                     input {
                         class: format!(
                             "w-full p-3 border rounded-md shadow-sm transition-all {} {}",
-                            if dark_mode == Theme::Dark { "bg-gray-700 text-white" } else { "bg-white text-gray-900" },
+                            if dark_mode() == Theme::Dark { "bg-gray-700 text-white" } else { "bg-white text-gray-900" },
                             if name_valid() { "border-gray-300" } else { "border-red-500" }
                         ),
                         r#type: "text",
@@ -191,7 +190,7 @@ pub fn Register() -> Element {
                     input {
                         class: format!(
                             "w-full p-3 border rounded-md shadow-sm transition-all {} {}",
-                            if dark_mode == Theme::Dark { "bg-gray-700 text-white" } else { "bg-white text-gray-900" },
+                            if dark_mode() == Theme::Dark { "bg-gray-700 text-white" } else { "bg-white text-gray-900" },
                             if email_valid() { "border-gray-300" } else { "border-red-500" }
                         ),
                         r#type: "text",
@@ -213,7 +212,7 @@ pub fn Register() -> Element {
                     input {
                         class: format!(
                             "w-full p-3 border rounded-md shadow-sm transition-all {} {}",
-                            if dark_mode == Theme::Dark { "bg-gray-700 text-white" } else { "bg-white text-gray-900" },
+                            if dark_mode() == Theme::Dark { "bg-gray-700 text-white" } else { "bg-white text-gray-900" },
                             if password_valid() { "border-gray-300" } else { "border-red-500" }
                         ),
                         r#type: if show_password() { "text" } else { "password" },
@@ -249,7 +248,7 @@ pub fn Register() -> Element {
                         Spinner {
                             aria_label: "Loading spinner".to_string(),
                             size: SpinnerSize::Md,
-                            dark_mode: dark_mode == Theme::Dark,
+                            dark_mode: dark_mode() == Theme::Dark,
                         }
                         span { "Signing Up..." }
                     } else {
