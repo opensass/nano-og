@@ -688,9 +688,9 @@ dependencies = [
 
 [[package]]
 name = "dioxus-cli-config"
-version = "0.6.0"
+version = "0.6.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "27a7caafe149ef8b1bb526ac7dfc6687a6b610a91a7fa8b9f9c2f64825538462"
+checksum = "d20764ae5fbe886e4602fdd6f2420ed03697eccba51605926f54693bd65879f3"
 dependencies = [
  "wasm-bindgen",
 ]
@@ -979,9 +979,9 @@ dependencies = [
 
 [[package]]
 name = "dioxus-logger"
-version = "0.6.0"
+version = "0.6.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "86c9db554355b5418ce754c9a98482862f6f71ea1d87f00ee027cd081ad282e6"
+checksum = "545961e752f6c8bf59c274951b3c8b18a106db6ad2f9e2035b29e1f2a3e899b1"
 dependencies = [
  "console_error_panic_hook",
  "dioxus-cli-config",
